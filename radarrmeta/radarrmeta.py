@@ -4,6 +4,7 @@ import logging
 import json
 from urllib.parse import urlparse
 
+import discord
 from redbot.core import checks, commands
 from redbot.core.utils.chat_formatting import box, pagify
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
@@ -34,7 +35,11 @@ class RadarrMeta(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     movie_dict = json.loads(text)
-                    await ctx.send(box(movie_dict["Title"]))
+                    embed = discord.Embed(title=movie_dict["Title"]) #,color=Hex code
+                    embed.add_field(name="Overview", value=movie_dict["Overview"])
+                    embed.add_field(name="Year", value=movie_dict["Year"])
+                    embed.set_footer(name="footer") #if you like to
+                    await ctx.send(embed=embed)
             else:
                 return
 
