@@ -49,7 +49,7 @@ class RadarrMeta(commands.Cog):
         Input a URL to read.
         """
         async with ctx.typing():
-            url = "https://radarrapi.servarr.com/v1/movie/imdb" + imdb_id
+            url = "https://radarrapi.servarr.com/v1/movie/imdb/" + imdb_id
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
