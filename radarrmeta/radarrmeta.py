@@ -61,7 +61,7 @@ class RadarrMeta(commands.Cog):
                         embed.add_field(name="Year", value=movie_dict[0]["Year"], inline=False)
                         embed.add_field(name="Studio", value=movie_dict[0]["Studio"], inline=False)
                         await ctx.send(embed=embed)
-                    else
+                    else:
                         await ctx.send("Imdb Id doesn't exist or isn't on Tmdb")
             else:
                 return
