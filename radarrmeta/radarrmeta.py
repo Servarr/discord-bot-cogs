@@ -56,10 +56,15 @@ class RadarrMeta(commands.Cog):
                 if text:
                     movie_dict = json.loads(text)
                     if len(movie_dict) > 0:
+                        poster = ""
+                        for dest in movie_dict[0]["Images"]:
+                            if dest["CoverType"] == "Poster":
+                                poster = dest["Url"]
                         embed = discord.Embed(title=movie_dict[0]["Title"], description="", colour=await ctx.embed_colour())
                         embed.add_field(name="Overview", value=movie_dict[0]["Overview"])
                         embed.add_field(name="Year", value=movie_dict[0]["Year"], inline=False)
                         embed.add_field(name="Studio", value=movie_dict[0]["Studio"], inline=False)
+                        embed.set_image(url=poster)
                         await ctx.send(embed=embed)
                     else:
                         await ctx.send("Imdb Id doesn't exist or isn't on Tmdb")
