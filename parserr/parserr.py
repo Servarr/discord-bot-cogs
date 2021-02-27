@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 log = logging.getLogger("red.servarr.parserr")
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 
 class Parserr(commands.Cog):
@@ -28,7 +28,7 @@ class Parserr(commands.Cog):
         Input a Env variable to Read
         """
         async with ctx.typing():
-            if os.getenv[envstr]:
-                await ctx.send(os.getenv[envstr])
+            if os.getenv(envstr):
+                await ctx.send(os.getenv(envstr))
             else:
                 await ctx.send(f"{envstr} does not exist")
