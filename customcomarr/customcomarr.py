@@ -257,7 +257,7 @@ class CustomCommandarr(commands.Cog):
         - `<command>` The custom command to get the raw response of."""
         commands = await self.config.commands()
         if command not in commands:
-            return await ctx.send("That command doesn't exist.")
+            return await ctx.send("That global command doesn't exist.")
         command = commands[command]
         if isinstance(command["response"], str):
             raw = discord.utils.escape_markdown(command["response"])
@@ -328,7 +328,7 @@ class CustomCommandarr(commands.Cog):
     @customcomarr.group(name="create", aliases=["add"], invoke_without_command=True)
     @checks.mod_or_permissions(administrator=True)
     async def cc_create(self, ctx: commands.Context, command: str.lower, *, text: str):
-        """Create custom commands.
+        """Create global custom commands.
 
         If a type is not specified, a simple CC will be created.
         CCs can be enhanced with arguments, see the guide
@@ -339,7 +339,7 @@ class CustomCommandarr(commands.Cog):
     @cc_create.command(name="random")
     @checks.mod_or_permissions(administrator=True)
     async def cc_create_random(self, ctx: commands.Context, command: str.lower):
-        """Create a CC where it will randomly choose a response!
+        """Create a global CC where it will randomly choose a response!
 
         Note: This command is interactive.
 
@@ -371,7 +371,7 @@ class CustomCommandarr(commands.Cog):
     @cc_create.command(name="simple")
     @checks.mod_or_permissions(administrator=True)
     async def cc_create_simple(self, ctx, command: str.lower, *, text: str):
-        """Add a simple custom command.
+        """Add a simple global custom command.
 
         Example:
             - `[p]customcomarr create simple yourcommand Text you want`
@@ -390,10 +390,10 @@ class CustomCommandarr(commands.Cog):
             return
         try:
             await self.commandobj.create(ctx=ctx, command=command, response=text)
-            await ctx.send(_("Custom command successfully added."))
+            await ctx.send(_("Global Custom command successfully added."))
         except AlreadyExists:
             await ctx.send(
-                _("This command already exists. Use `{command}` to edit it.").format(
+                _("This global command already exists. Use `{command}` to edit it.").format(
                     command=f"{ctx.clean_prefix}customcomarr edit"
                 )
             )
@@ -405,7 +405,7 @@ class CustomCommandarr(commands.Cog):
     async def cc_cooldown(
         self, ctx, command: str.lower, cooldown: int = None, *, per: str.lower = "member"
     ):
-        """Set, edit, or view the cooldown for a custom command.
+        """Set, edit, or view the cooldown for a global custom command.
 
         You may set cooldowns per member, channel, or guild. Multiple
         cooldowns may be set. All cooldowns must be cooled to call the
@@ -465,29 +465,29 @@ class CustomCommandarr(commands.Cog):
         """
         try:
             await self.commandobj.delete(ctx=ctx, command=command)
-            await ctx.send(_("Custom command successfully deleted."))
+            await ctx.send(_("Global custom command successfully deleted."))
         except NotFound:
             await ctx.send(_("That command doesn't exist."))
 
     @customcomarr.command(name="edit")
     @checks.mod_or_permissions(administrator=True)
     async def cc_edit(self, ctx, command: str.lower, *, text: str = None):
-        """Edit a custom command.
+        """Edit a global custom command.
 
         Example:
             - `[p]customcomarr edit yourcommand Text you want`
 
         **Arguments:**
 
-        - `<command>` The custom command to edit.
+        - `<command>` The global custom command to edit.
         - `<text>` The new text to return when executing the command.
         """
         try:
             await self.commandobj.edit(ctx=ctx, command=command, response=text)
-            await ctx.send(_("Custom command successfully edited."))
+            await ctx.send(_("Global custom command successfully edited."))
         except NotFound:
             await ctx.send(
-                _("That command doesn't exist. Use `{command}` to add it.").format(
+                _("That global command doesn't exist. Use `{command}` to add it.").format(
                     command=f"{ctx.clean_prefix}customcomarr create"
                 )
             )
@@ -499,7 +499,7 @@ class CustomCommandarr(commands.Cog):
     @customcomarr.command(name="list")
     @checks.bot_has_permissions(add_reactions=True)
     async def cc_list(self, ctx: commands.Context):
-        """List all available custom commands.
+        """List all available global custom commands.
 
         The list displays a preview of each command's response, with
         markdown escaped and newlines replaced with spaces.
@@ -509,7 +509,7 @@ class CustomCommandarr(commands.Cog):
         if not cc_dict:
             await ctx.send(
                 _(
-                    "There are no custom commands in this server."
+                    "There are no global custom commands in this server."
                     " Use `{command}` to start adding some."
                 ).format(command=f"{ctx.clean_prefix}customcomarr create")
             )
@@ -524,7 +524,7 @@ class CustomCommandarr(commands.Cog):
             embed_pages = []
             for idx, page in enumerate(pages, start=1):
                 embed = discord.Embed(
-                    title=_("Custom Command List"),
+                    title=_("Global Custom Command List"),
                     description=page,
                     colour=await ctx.embed_colour(),
                 )
@@ -538,11 +538,11 @@ class CustomCommandarr(commands.Cog):
 
     @customcomarr.command(name="show")
     async def cc_show(self, ctx, command_name: str):
-        """Shows a custom command's responses and its settings.
+        """Shows a global custom command's responses and its settings.
 
         **Arguments:**
 
-        - `<command>` The custom command to show.
+        - `<command>` The global custom command to show.
         """
 
         try:
@@ -804,12 +804,12 @@ class CustomCommandarr(commands.Cog):
         return str(getattr(first, second, raw_result))
 
     async def get_command_names(self, guild: discord.Guild) -> Set[str]:
-        """Get all custom command names in a guild.
+        """Get all global custom command names in a guild.
 
         Returns
         --------
         Set[str]
-            A set of all custom command names.
+            A set of all global custom command names.
 
         """
         return set(await CommandObj.get_commands(self.config))
