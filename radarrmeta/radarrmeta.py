@@ -35,10 +35,9 @@ class RadarrMeta(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     movie_dict = json.loads(text)
-                    embed = discord.Embed(title=movie_dict["Title"]) #,color=Hex code
+                    embed = discord.Embed(title=movie_dict["Title"], description="description", colour=await ctx.embed_colour())
                     embed.add_field(name="Overview", value=movie_dict["Overview"])
                     embed.add_field(name="Year", value=movie_dict["Year"])
-                    embed.set_footer(name="footer") #if you like to
                     await ctx.send(embed=embed)
             else:
                 return
