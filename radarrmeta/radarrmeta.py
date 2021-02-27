@@ -35,11 +35,18 @@ class RadarrMeta(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     movie_dict = json.loads(text)
+                    poster = ""
+                    for dest in movie_dict["Images"]:
+                        if dest["CoverType"] == "Poster":
+                            poster = dest["Url"]
                     embed = discord.Embed(title=movie_dict["Title"], description="", colour=await ctx.embed_colour())
                     embed.add_field(name="Overview", value=movie_dict["Overview"])
                     embed.add_field(name="Year", value=movie_dict["Year"], inline=False)
                     embed.add_field(name="Studio", value=movie_dict["Studio"], inline=False)
+                    embed.set_thumbnail(url=poster)
                     await ctx.send(embed=embed)
+                else:
+                    await ctx.send("TmdbId not found")
             else:
                 return
 
@@ -64,10 +71,12 @@ class RadarrMeta(commands.Cog):
                         embed.add_field(name="Overview", value=movie_dict[0]["Overview"])
                         embed.add_field(name="Year", value=movie_dict[0]["Year"], inline=False)
                         embed.add_field(name="Studio", value=movie_dict[0]["Studio"], inline=False)
-                        embed.set_image(url=poster)
+                        embed.set_thumbnail(url=poster)
                         await ctx.send(embed=embed)
                     else:
-                        await ctx.send("Imdb Id doesn't exist or isn't on Tmdb")
+                        await ctx.send("ImdbId doesn't exist or isn't on TMDb")
+                else:
+                    await ctx.send("ImdbId doesn't exist or isn't on TMDb")
             else:
                 return
 
