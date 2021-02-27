@@ -153,7 +153,7 @@ class CommandObj:
         cooldowns: Mapping[str, int] = None,
         ask_for: bool = True,
     ):
-        """Edit an already existing custom command"""
+        """Edit an already existing global custom command"""
         ccinfo = await self.db.commands.get_raw(command, default=None)
 
         # Check if this command is registered
@@ -163,7 +163,7 @@ class CommandObj:
         author = ctx.message.author
 
         if ask_for and not response:
-            await ctx.send(_("Do you want to create a 'randomized' custom command? (y/n)"))
+            await ctx.send(_("Do you want to create a 'randomized' global custom command? (y/n)"))
 
             pred = MessagePredicate.yes_or_no(ctx)
             try:
@@ -214,7 +214,7 @@ class CommandObj:
 
 @cog_i18n(_)
 class CustomCommandarr(commands.Cog):
-    """This cog contains commands for creating and managing custom commands that display text.
+    """This cog contains commands for creating and managing global custom commands that display text.
 
     These are useful for storing information members might need, like FAQ answers or invite links.
     Custom commands can be used by anyone by default, so be careful with pings.
@@ -243,18 +243,18 @@ class CustomCommandarr(commands.Cog):
 
     @commands.group(aliases=["ccg"])
     async def customcomarr(self, ctx: commands.Context):
-        """Base command for Custom Commands management."""
+        """Base command for Global Custom Commands management."""
         pass
 
     @customcomarr.command(name="raw")
     async def cc_raw(self, ctx: commands.Context, command: str.lower):
-        """Get the raw response of a custom command, to get the proper markdown.
+        """Get the raw response of a global custom command, to get the proper markdown.
 
         This is helpful for copy and pasting.
 
         **Arguments:**
 
-        - `<command>` The custom command to get the raw response of."""
+        - `<command>` The global custom command to get the raw response of."""
         commands = await self.config.commands()
         if command not in commands:
             return await ctx.send("That global command doesn't exist.")
