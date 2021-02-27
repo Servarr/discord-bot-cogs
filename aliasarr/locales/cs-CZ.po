@@ -154,11 +154,11 @@ msgstr "Seznam dostupných globálních aliasů pro tohoto bota."
 msgid "There are no global aliases."
 msgstr "Neexistují žádné globální aliasy."
 
-#: redbot/cogs/alias/alias_entry.py:198
+#: redbot/cogs/alias/aliasarr_entry.py:198
 msgid "Arguments must be specified with a number."
 msgstr "Argumenty musí být zadány s číslem."
 
-#: redbot/cogs/alias/alias_entry.py:205
+#: redbot/cogs/alias/aliasarr_entry.py:205
 msgid "Arguments must be sequential. Missing arguments: "
 msgstr "Argumenty musí být sekvenční. Chybějící argumenty: "
 

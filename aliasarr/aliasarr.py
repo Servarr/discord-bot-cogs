@@ -12,7 +12,7 @@ from redbot.core.utils.chat_formatting import box, pagify
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 from redbot.core.bot import Red
-from .alias_entry import AliasarrEntry, AliasCache, ArgParseError
+from .aliasarr_entry import AliasarrEntry, AliasCache, ArgParseError
 
 _ = Translator("Aliasarr", __file__)
 

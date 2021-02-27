@@ -160,11 +160,11 @@ msgstr "Список доступных глобальных псевдоним�
 msgid "There are no global aliases."
 msgstr "Нет всеобщих синонимов."
 
-#: redbot/cogs/alias/alias_entry.py:198
+#: redbot/cogs/alias/aliasarr_entry.py:198
 msgid "Arguments must be specified with a number."
 msgstr "Аргументы должны быть указаны с числом."
 
-#: redbot/cogs/alias/alias_entry.py:205
+#: redbot/cogs/alias/aliasarr_entry.py:205
 msgid "Arguments must be sequential. Missing arguments: "
 msgstr "Аргументы должны быть последовательными. Отсутствующие аргументы: "
 

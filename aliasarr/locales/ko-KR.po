@@ -159,11 +159,11 @@ msgstr "이 봇에서 사용할 수 있는 글로벌 별칭들을 나열해주�
 msgid "There are no global aliases."
 msgstr "전역적인 별칭이 없어요."
 
-#: redbot/cogs/alias/alias_entry.py:198
+#: redbot/cogs/alias/aliasarr_entry.py:198
 msgid "Arguments must be specified with a number."
 msgstr "인수는 숫자로 지정해줘야해요."
 
-#: redbot/cogs/alias/alias_entry.py:205
+#: redbot/cogs/alias/aliasarr_entry.py:205
 msgid "Arguments must be sequential. Missing arguments: "
 msgstr "인수는 순차적이어야해요. 미확인된 인수: "
 

@@ -160,11 +160,11 @@ msgstr "Liste over tilgjengelige globale aliaser på denne botten."
 msgid "There are no global aliases."
 msgstr "Det er ingen globale aliaser på denne boten."
 
-#: redbot/cogs/alias/alias_entry.py:198
+#: redbot/cogs/alias/aliasarr_entry.py:198
 msgid "Arguments must be specified with a number."
 msgstr "Argumenter må spesifiseres med et nummer."
 
-#: redbot/cogs/alias/alias_entry.py:205
+#: redbot/cogs/alias/aliasarr_entry.py:205
 msgid "Arguments must be sequential. Missing arguments: "
 msgstr "Argumenter må være sekvensielle. Manglende argumenter: "
 

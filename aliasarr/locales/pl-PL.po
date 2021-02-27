@@ -161,11 +161,11 @@ msgstr "Wyświetla dostępne globalne aliasy dla tego bota."
 msgid "There are no global aliases."
 msgstr "Brak globalnych aliasów."
 
-#: redbot/cogs/alias/alias_entry.py:198
+#: redbot/cogs/alias/aliasarr_entry.py:198
 msgid "Arguments must be specified with a number."
 msgstr "Argumenty należy określić liczbą."
 
-#: redbot/cogs/alias/alias_entry.py:205
+#: redbot/cogs/alias/aliasarr_entry.py:205
 msgid "Arguments must be sequential. Missing arguments: "
 msgstr "Argumenty muszą być sekwencyjne. Brakujące argumenty: "
 
