@@ -35,10 +35,34 @@ class RadarrMeta(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     movie_dict = json.loads(text)
-                    embed = discord.Embed(title=movie_dict["Title"], description="description", colour=await ctx.embed_colour())
+                    embed = discord.Embed(title=movie_dict["Title"], description="", colour=await ctx.embed_colour())
                     embed.add_field(name="Overview", value=movie_dict["Overview"])
-                    embed.add_field(name="Year", value=movie_dict["Year"])
+                    embed.add_field(name="Year", value=movie_dict["Year"], inline=False)
+                    embed.add_field(name="Studio", value=movie_dict["Studio"], inline=False)
                     await ctx.send(embed=embed)
+            else:
+                return
+
+    @commands.command()
+    async def imdb(self, ctx, imdb_id: str):
+        """
+        Input a URL to read.
+        """
+        async with ctx.typing():
+            url = "https://radarrapi.servarr.com/v1/movie/imdb" + imdb_id
+            valid_url = await self._valid_url(ctx, url)
+            if valid_url:
+                text = await self._get_url_content(url)
+                if text:
+                    movie_dict = json.loads(text)
+                    if len(movie_dict) > 0:
+                        embed = discord.Embed(title=movie_dict[0]["Title"], description="", colour=await ctx.embed_colour())
+                        embed.add_field(name="Overview", value=movie_dict[0]["Overview"])
+                        embed.add_field(name="Year", value=movie_dict[0]["Year"], inline=False)
+                        embed.add_field(name="Studio", value=movie_dict[0]["Studio"], inline=False)
+                        await ctx.send(embed=embed)
+                    else
+                        await ctx.send("Imdb Id doesn't exist or isn't on Tmdb")
             else:
                 return
 
