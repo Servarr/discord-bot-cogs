@@ -47,7 +47,7 @@ class CommandObj:
     def __init__(self, **kwargs):
         self.config = kwargs.get("config")
         self.bot = kwargs.get("bot")
-        self.db = self.config.guild
+        self.db = self.config
 
     @staticmethod
     async def get_commands(config) -> dict:
@@ -113,14 +113,14 @@ class CommandObj:
     async def get(self, message: discord.Message, command: str) -> Tuple[str, Dict]:
         if not command:
             raise NotFound()
-        ccinfo = await self.db(message.guild).commands.get_raw(command, default=None)
+        ccinfo = await self.db.commands.get_raw(command, default=None)
         if not ccinfo:
             raise NotFound()
         else:
             return ccinfo["response"], ccinfo.get("cooldowns", {})
 
     async def get_full(self, message: discord.Message, command: str) -> Dict:
-        ccinfo = await self.db(message.guild).commands.get_raw(command, default=None)
+        ccinfo = await self.db.commands.get_raw(command, default=None)
         if ccinfo:
             return ccinfo
         else:
@@ -129,7 +129,7 @@ class CommandObj:
     async def create(self, ctx: commands.Context, command: str, *, response):
         """Create a custom command"""
         # Check if this command is already registered as a customcommand
-        if await self.db(ctx.guild).commands.get_raw(command, default=None):
+        if await self.db.commands.get_raw(command, default=None):
             raise AlreadyExists()
         # test to raise
         ctx.cog.prepare_args(response if isinstance(response, str) else response[0])
@@ -142,7 +142,7 @@ class CommandObj:
             "editors": [],
             "response": response,
         }
-        await self.db(ctx.guild).commands.set_raw(command, value=ccinfo)
+        await self.db.commands.set_raw(command, value=ccinfo)
 
     async def edit(
         self,
@@ -154,7 +154,7 @@ class CommandObj:
         ask_for: bool = True,
     ):
         """Edit an already existing custom command"""
-        ccinfo = await self.db(ctx.guild).commands.get_raw(command, default=None)
+        ccinfo = await self.db.commands.get_raw(command, default=None)
 
         # Check if this command is registered
         if not ccinfo:
@@ -202,14 +202,14 @@ class CommandObj:
 
         ccinfo["edited_at"] = self.get_now()
 
-        await self.db(ctx.guild).commands.set_raw(command, value=ccinfo)
+        await self.db.commands.set_raw(command, value=ccinfo)
 
     async def delete(self, ctx: commands.Context, command: str):
         """Delete an already existing custom command"""
         # Check if this command is registered
-        if not await self.db(ctx.guild).commands.get_raw(command, default=None):
+        if not await self.db.commands.get_raw(command, default=None):
             raise NotFound()
-        await self.db(ctx.guild).commands.set_raw(command, value=None)
+        await self.db.commands.set_raw(command, value=None)
 
 
 @cog_i18n(_)
@@ -226,7 +226,7 @@ class CustomCommandarr(commands.Cog):
         self.bot = bot
         self.key = 414589031223512
         self.config = Config.get_conf(self, self.key)
-        self.config.register_guild(commands={})
+        self.config.register_global(commands={})
         self.commandobj = CommandObj(config=self.config, bot=self.bot)
         self.cooldowns = {}
 
@@ -241,14 +241,9 @@ class CustomCommandarr(commands.Cog):
 
         await self.commandobj.redact_author_ids(user_id)
 
-    @commands.group(aliases=["cc"])
+    @commands.group(aliases=["ccg"])
     async def customcomarr(self, ctx: commands.Context):
         """Base command for Custom Commands management."""
-        pass
-
-    @customcomarr.group(name="global")
-    async def global_(self, ctx: commands.Context):
-        """Manage global commands."""
         pass
 
     @customcomarr.command(name="raw")
@@ -260,7 +255,7 @@ class CustomCommandarr(commands.Cog):
         **Arguments:**
 
         - `<command>` The custom command to get the raw response of."""
-        commands = await self.config.guild(ctx.guild).commands()
+        commands = await self.config.commands()
         if command not in commands:
             return await ctx.send("That command doesn't exist.")
         command = commands[command]
@@ -297,7 +292,6 @@ class CustomCommandarr(commands.Cog):
             await menus.menu(ctx, msglist, menus.DEFAULT_CONTROLS)
 
     @customcomarr.command(name="search")
-    @commands.guild_only()
     async def cc_search(self, ctx: commands.Context, *, query):
         """
         Searches through custom commands, according to the query.
@@ -308,7 +302,7 @@ class CustomCommandarr(commands.Cog):
 
         - `<query>` The query to search for. Can be multiple words.
         """
-        cc_commands = await CommandObj.get_commands(self.config.guild(ctx.guild))
+        cc_commands = await CommandObj.get_commands(self.config)
         extracted = process.extract(query, list(cc_commands.keys()))
         accepted = []
         for entry in extracted:
@@ -334,17 +328,6 @@ class CustomCommandarr(commands.Cog):
     @customcomarr.group(name="create", aliases=["add"], invoke_without_command=True)
     @checks.mod_or_permissions(administrator=True)
     async def cc_create(self, ctx: commands.Context, command: str.lower, *, text: str):
-        """Create custom commands.
-
-        If a type is not specified, a simple CC will be created.
-        CCs can be enhanced with arguments, see the guide
-        [here](https://docs.discord.red/en/stable/cog_customcom.html).
-        """
-        await ctx.invoke(self.cc_create_simple, command=command, text=text)
-
-    @global_.group(name="create", aliases=["add"], invoke_without_command=True)
-    @checks.mod_or_permissions(administrator=True)
-    async def cc_global_create(self, ctx: commands.Context, command: str.lower, *, text: str):
         """Create custom commands.
 
         If a type is not specified, a simple CC will be created.
@@ -392,38 +375,6 @@ class CustomCommandarr(commands.Cog):
 
         Example:
             - `[p]customcomarr create simple yourcommand Text you want`
-
-        **Arguments:**
-
-        - `<command>` The command executed to return the text. Cast to lowercase.
-        - `<text>` The text to return when executing the command. See guide for enhanced usage.
-        """
-        if any(char.isspace() for char in command):
-            # Haha, nice try
-            await ctx.send(_("Custom command names cannot have spaces in them."))
-            return
-        if command in (*self.bot.all_commands, *commands.RESERVED_COMMAND_NAMES):
-            await ctx.send(_("There already exists a bot command with the same name."))
-            return
-        try:
-            await self.commandobj.create(ctx=ctx, command=command, response=text)
-            await ctx.send(_("Custom command successfully added."))
-        except AlreadyExists:
-            await ctx.send(
-                _("This command already exists. Use `{command}` to edit it.").format(
-                    command=f"{ctx.clean_prefix}customcomarr edit"
-                )
-            )
-        except ArgParseError as e:
-            await ctx.send(e.args[0])
-
-    @cc_global_create.command(name="simple")
-    @checks.mod_or_permissions(administrator=True)
-    async def cc_global_create_simple(self, ctx, command: str.lower, *, text: str):
-        """Add a simple global custom command.
-
-        Example:
-            - `[p]customcomarr global create simple yourcommand Text you want`
 
         **Arguments:**
 
@@ -553,53 +504,12 @@ class CustomCommandarr(commands.Cog):
         The list displays a preview of each command's response, with
         markdown escaped and newlines replaced with spaces.
         """
-        cc_dict = await CommandObj.get_commands(self.config.guild(ctx.guild))
-
-        if not cc_dict:
-            await ctx.send(
-                _(
-                    "There are no custom commands in this server."
-                    " Use `{command}` to start adding some."
-                ).format(command=f"{ctx.clean_prefix}customcomarr create")
-            )
-            return
-
-        results = self.prepare_command_list(ctx, sorted(cc_dict.items(), key=lambda t: t[0]))
-
-        if await ctx.embed_requested():
-            # We need a space before the newline incase the CC preview ends in link (GH-2295)
-            content = " \n".join(map("**{0[0]}** {0[1]}".format, results))
-            pages = list(pagify(content, page_length=1024))
-            embed_pages = []
-            for idx, page in enumerate(pages, start=1):
-                embed = discord.Embed(
-                    title=_("Custom Command List"),
-                    description=page,
-                    colour=await ctx.embed_colour(),
-                )
-                embed.set_footer(text=_("Page {num}/{total}").format(num=idx, total=len(pages)))
-                embed_pages.append(embed)
-            await menus.menu(ctx, embed_pages, menus.DEFAULT_CONTROLS)
-        else:
-            content = "\n".join(map("{0[0]:<12} : {0[1]}".format, results))
-            pages = list(map(box, pagify(content, page_length=2000, shorten_by=10)))
-            await menus.menu(ctx, pages, menus.DEFAULT_CONTROLS)
-
-
-    @global_.command(name="list")
-    @checks.bot_has_permissions(add_reactions=True)
-    async def cc_global_list(self, ctx: commands.Context):
-        """List all available global custom commands.
-
-        The list displays a preview of each global command's response, with
-        markdown escaped and newlines replaced with spaces.
-        """
         cc_dict = await CommandObj.get_commands(self.config)
 
         if not cc_dict:
             await ctx.send(
                 _(
-                    "There are no global custom commands."
+                    "There are no custom commands in this server."
                     " Use `{command}` to start adding some."
                 ).format(command=f"{ctx.clean_prefix}customcomarr create")
             )
@@ -902,7 +812,7 @@ class CustomCommandarr(commands.Cog):
             A set of all custom command names.
 
         """
-        return set(await CommandObj.get_commands(self.config.guild(guild)))
+        return set(await CommandObj.get_commands(self.config))
 
     @staticmethod
     def prepare_command_list(
