@@ -1,0 +1,154 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: red-discordbot\n"
+"POT-Creation-Date: 2019-07-05 22:33+0200\n"
+"PO-Revision-Date: 2019-07-14 02:15\n"
+"Last-Translator: Robert Jansen (Kowlin)\n"
+"Language-Team: Pirate English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: redgettext 3.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: red-discordbot\n"
+"X-Crowdin-Language: en-PT\n"
+"X-Crowdin-File: /cogs/alias/locales/messages.pot\n"
+"Language: en_PT\n"
+
+#: aliasarr/aliasarr.py:35
+#, docstring
+msgid "Create aliases for commands.\\n\\n    Aliases are alternative names shortcuts for commands. They\\n    can act as both a lambda (storing arguments for repeated use)\\n    or as simply a shortcut to saying \\\"x y z\\\".\\n\\n    When run, aliases will accept any additional arguments\\n    and append them to the stored alias.\\n    "
+msgstr ""
+
+#: aliasarr/aliasarr.py:107
+msgid "Arguments must be specified with a number."
+msgstr ""
+
+#: aliasarr/aliasarr.py:114
+msgid "Arguments must be sequential. Missing arguments: "
+msgstr ""
+
+#: aliasarr/aliasarr.py:164
+msgid "No prefix found."
+msgstr "Arrr, no prefix found capt'n!"
+
+#: aliasarr/aliasarr.py:231
+#, docstring
+msgid "Manage command aliases."
+msgstr ""
+
+#: aliasarr/aliasarr.py:236
+#, docstring
+msgid "Manage global aliases."
+msgstr ""
+
+#: aliasarr/aliasarr.py:243
+#, docstring
+msgid "Add an alias for a command."
+msgstr ""
+
+#: aliasarr/aliasarr.py:248
+msgid "You attempted to create a new alias with the name {name} but that name is already a command on this bot."
+msgstr ""
+
+#: aliasarr/aliasarr.py:259
+msgid "You attempted to create a new alias with the name {name} but that alias already exists on this server."
+msgstr ""
+
+#: aliasarr/aliasarr.py:270
+msgid "You attempted to create a new alias with the name {name} but that name is an invalid alias name. Alias names may not contain spaces."
+msgstr ""
+
+#: aliasarr/aliasarr.py:289
+msgid "A new alias with the trigger `{name}` has been created."
+msgstr ""
+
+#: aliasarr/aliasarr.py:295
+#, docstring
+msgid "Add a global alias for a command."
+msgstr ""
+
+#: aliasarr/aliasarr.py:300
+msgid "You attempted to create a new global alias with the name {name} but that name is already a command on this bot."
+msgstr ""
+
+#: aliasarr/aliasarr.py:311
+msgid "You attempted to create a new global alias with the name {name} but that alias already exists on this server."
+msgstr ""
+
+#: aliasarr/aliasarr.py:322
+msgid "You attempted to create a new global alias with the name {name} but that name is an invalid alias name. Alias names may not contain spaces."
+msgstr ""
+
+#: aliasarr/aliasarr.py:338
+msgid "A new global alias with the trigger `{name}` has been created."
+msgstr ""
+
+#: aliasarr/aliasarr.py:346
+#, docstring
+msgid "Try to execute help for the base command of the alias."
+msgstr ""
+
+#: aliasarr/aliasarr.py:355
+msgid "{prefix}help {command}"
+msgstr ""
+
+#: aliasarr/aliasarr.py:360
+msgid "No such alias exists."
+msgstr "Yer scummy alias don't exist, matey!"
+
+#: aliasarr/aliasarr.py:365
+#, docstring
+msgid "Show what command the alias executes."
+msgstr ""
+
+#: aliasarr/aliasarr.py:370
+msgid "The `{alias_name}` alias will execute the command `{command}`"
+msgstr ""
+
+#: aliasarr/aliasarr.py:375
+msgid "There is no alias with the name `{name}`"
+msgstr ""
+
+#: aliasarr/aliasarr.py:381
+#, docstring
+msgid "Delete an existing alias on this server."
+msgstr ""
+
+#: aliasarr/aliasarr.py:386 aliasarr/aliasarr.py:422
+#: aliasarr/aliasarr.py:433
+msgid "There are no aliases on this server."
+msgstr "Alas! Thar be no aliases on this guild."
+
+#: aliasarr/aliasarr.py:391 aliasarr/aliasarr.py:409
+msgid "Alias with the name `{name}` was successfully deleted."
+msgstr ""
+
+#: aliasarr/aliasarr.py:394 aliasarr/aliasarr.py:412
+msgid "Alias with name `{name}` was not found."
+msgstr ""
+
+#: aliasarr/aliasarr.py:399
+#, docstring
+msgid "Delete an existing global alias."
+msgstr ""
+
+#: aliasarr/aliasarr.py:404
+msgid "There are no aliases on this bot."
+msgstr "Shiver me timbers! Thar be no aliases on this bot."
+
+#: aliasarr/aliasarr.py:417
+#, docstring
+msgid "List the available aliases on this server."
+msgstr ""
+
+#: aliasarr/aliasarr.py:418 aliasarr/aliasarr.py:429
+msgid "Aliases:"
+msgstr "Yar Aliases:"
+
+#: aliasarr/aliasarr.py:428
+#, docstring
+msgid "List the available global aliases on this bot."
+msgstr ""
+

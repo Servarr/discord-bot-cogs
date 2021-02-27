@@ -1,0 +1,9 @@
+{
+  "author" : ["TeamServarr"],
+  "install_msg" : "Thank you for choosing Servarr... Good Luck, You'll need it!",
+  "name" : "Servarr-Cogs",
+  "short" : "cogs for arr",
+  "description" : "Cogs for Lidarr, Radarr, Readarr servers",
+  "min_python_version": [3, 7, 2],
+  "tags": []
+}

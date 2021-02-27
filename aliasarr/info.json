@@ -1,0 +1,13 @@
+{
+  "author" : ["TeamServarr"],
+  "install_msg" : "You've just installed the Aliasarr cog!",
+  "name" : "Aliasarr",
+  "short" : "Create Aliases for Commands",
+  "description" : "Create Aliases for Commands",
+  "required_cogs": {},
+  "requirements": [],
+  "min_bot_version": "3.1.8",
+  "max_bot_version": "0.0.0",
+  "tags": [],
+  "type": "COG"
+}

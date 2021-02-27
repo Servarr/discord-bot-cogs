@@ -1,0 +1,171 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: red-discordbot\n"
+"POT-Creation-Date: 2021-02-11 12:29+0000\n"
+"Last-Translator: \n"
+"Language-Team: Polish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: redgettext 3.3\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+"X-Crowdin-Project: red-discordbot\n"
+"X-Crowdin-Project-ID: 289505\n"
+"X-Crowdin-Language: pl\n"
+"X-Crowdin-File-ID: 8\n"
+"Language: pl_PL\n"
+
+#: aliasarr/aliasarr.py:35
+#, docstring
+msgid "Create aliases for commands.\n\n"
+"    Aliases are alternative names shortcuts for commands. They\n"
+"    can act as both a lambda (storing arguments for repeated use)\n"
+"    or as simply a shortcut to saying \"x y z\".\n\n"
+"    When run, aliases will accept any additional arguments\n"
+"    and append them to the stored alias.\n"
+"    "
+msgstr "Utwórz aliasy dla poleceń.\n\n"
+"    Aliasy są alternatywnymi nazwami skróconych poleceń. Mogą\n"
+"  działać zarówno jako lambda (przechowywanie argumentów do wielokrotnego użycia)\n"
+" lub po prostu jako skrót do powiedzenia \"xyz \".\n\n"
+" \n"
+"Po uruchomieniu aliasy przyjmą wszelkie dodatkowe argumenty\n"
+"     i dołączą je do przechowywanego aliasu.\n"
+"    "
+
+#: aliasarr/aliasarr.py:203
+msgid "Aliases:\n"
+msgstr "Aliasy:\n"
+
+#: aliasarr/aliasarr.py:205
+msgid "\n\n"
+"Page {page}/{total}"
+msgstr "\n\n"
+"Strona {page}/{total}"
+
+#: aliasarr/aliasarr.py:215
+#, docstring
+msgid "Manage command aliases."
+msgstr "Zarządza aliasami poleceń."
+
+#: aliasarr/aliasarr.py:220
+#, docstring
+msgid "Manage global aliases."
+msgstr "Zarządza globalnymi aliasami."
+
+#: aliasarr/aliasarr.py:227
+#, docstring
+msgid "Add an alias for a command."
+msgstr "Dodaje alias do polecenia."
+
+#: aliasarr/aliasarr.py:232
+msgid "You attempted to create a new alias with the name {name} but that name is already a command on this bot."
+msgstr "Próbowałeś/aś utworzyć nowy alias o nazwie {name}, ale komenda o takiej nazwie jest już zajęta przez bota."
+
+#: aliasarr/aliasarr.py:243
+msgid "You attempted to create a new alias with the name {name} but that alias already exists."
+msgstr "Próbowałeś/aś utworzyć nowy alias o nazwie {name}, ale taki alias już istnieje."
+
+#: aliasarr/aliasarr.py:254
+msgid "You attempted to create a new alias with the name {name} but that name is an invalid alias name. Alias names may not contain spaces."
+msgstr "Próbowałeś/aś utworzyć nowy alias o nazwie {name}, ale ta nazwa jest nieprawidłową nazwą aliasu. Alias nie może zawierać spacji."
+
+#: aliasarr/aliasarr.py:266 aliasarr/aliasarr.py:325
+msgid "You attempted to create a new alias for a command that doesn't exist."
+msgstr "Próbowałeś/aś utworzyć nowy alias do komendy która nie istnieje."
+
+#: aliasarr/aliasarr.py:280
+msgid "A new alias with the trigger `{name}` has been created."
+msgstr "Utworzono nowy alias z wyzwalaczem '{name}'."
+
+#: aliasarr/aliasarr.py:286
+#, docstring
+msgid "Add a global alias for a command."
+msgstr "Dodaje globalny alias do polecenia."
+
+#: aliasarr/aliasarr.py:291
+msgid "You attempted to create a new global alias with the name {name} but that name is already a command on this bot."
+msgstr "Próbowałeś/aś utworzyć nowy globalny alias o nazwie {name}, ale komenda o takiej nazwie jest już zajęta przez bota."
+
+#: aliasarr/aliasarr.py:302
+msgid "You attempted to create a new global alias with the name {name} but that alias already exists."
+msgstr "Próbowałeś/aś utworzyć nowy globalny alias o nazwie {name}, ale taki alias już istnieje."
+
+#: aliasarr/aliasarr.py:313
+msgid "You attempted to create a new global alias with the name {name} but that name is an invalid alias name. Alias names may not contain spaces."
+msgstr "Próbowałeś/aś utworzyć nowy globalny alias o nazwie {name}, ale ta nazwa jest nieprawidłową nazwą aliasu. Alias nie może zawierać spacji."
+
+#: aliasarr/aliasarr.py:336
+msgid "A new global alias with the trigger `{name}` has been created."
+msgstr "Utworzono nowy globalny alias z wyzwalaczem '{name}'."
+
+#: aliasarr/aliasarr.py:343
+#, docstring
+msgid "Try to execute help for the base command of the alias."
+msgstr "Spróbuj wykonać pomoc dla podstawowej komendy dla aliasu."
+
+#: aliasarr/aliasarr.py:348
+msgid "No such alias exists."
+msgstr "Taki alias nie istnieje."
+
+#: aliasarr/aliasarr.py:352
+#, docstring
+msgid "Show what command the alias executes."
+msgstr "Pokazuje jaką komendę wykonuje alias."
+
+#: aliasarr/aliasarr.py:357
+msgid "The `{alias_name}` alias will execute the command `{command}`"
+msgstr "Alias '{alias_name}' spowoduje wykonanie komendy '{command}'"
+
+#: aliasarr/aliasarr.py:362
+msgid "There is no alias with the name `{name}`"
+msgstr "Nie istnieje alias o nazwie `{name}`"
+
+#: aliasarr/aliasarr.py:368
+#, docstring
+msgid "Delete an existing alias on this server."
+msgstr "Usuwa istniejący alias na tym serwerze."
+
+#: aliasarr/aliasarr.py:370 aliasarr/aliasarr.py:402
+msgid "There are no aliases on this server."
+msgstr "Nie ma aliasów na tym serwerze."
+
+#: aliasarr/aliasarr.py:375 aliasarr/aliasarr.py:390
+msgid "Alias with the name `{name}` was successfully deleted."
+msgstr "Alias o nazwie `{name}` został pomyślnie usunięty."
+
+#: aliasarr/aliasarr.py:378 aliasarr/aliasarr.py:393
+msgid "Alias with name `{name}` was not found."
+msgstr "Alias o nazwie `{name}` nie został znaleziony."
+
+#: aliasarr/aliasarr.py:383
+#, docstring
+msgid "Delete an existing global alias."
+msgstr "Usuwa istniejący globalny alias."
+
+#: aliasarr/aliasarr.py:385
+msgid "There are no global aliases on this bot."
+msgstr "Ten bot nie ma globalnych aliasów."
+
+#: aliasarr/aliasarr.py:399
+#, docstring
+msgid "List the available aliases on this server."
+msgstr "Wyświetla dostępne aliasy dla tego serwera."
+
+#: aliasarr/aliasarr.py:408
+#, docstring
+msgid "List the available global aliases on this bot."
+msgstr "Wyświetla dostępne globalne aliasy dla tego bota."
+
+#: aliasarr/aliasarr.py:411
+msgid "There are no global aliases."
+msgstr "Brak globalnych aliasów."
+
+#: redbot/cogs/alias/alias_entry.py:198
+msgid "Arguments must be specified with a number."
+msgstr "Argumenty należy określić liczbą."
+
+#: redbot/cogs/alias/alias_entry.py:205
+msgid "Arguments must be sequential. Missing arguments: "
+msgstr "Argumenty muszą być sekwencyjne. Brakujące argumenty: "
+
