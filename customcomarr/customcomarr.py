@@ -342,6 +342,17 @@ class CustomCommandarr(commands.Cog):
         """
         await ctx.invoke(self.cc_create_simple, command=command, text=text)
 
+    @global_.group(name="create", aliases=["add"], invoke_without_command=True)
+    @checks.mod_or_permissions(administrator=True)
+    async def cc_global_create(self, ctx: commands.Context, command: str.lower, *, text: str):
+        """Create custom commands.
+
+        If a type is not specified, a simple CC will be created.
+        CCs can be enhanced with arguments, see the guide
+        [here](https://docs.discord.red/en/stable/cog_customcom.html).
+        """
+        await ctx.invoke(self.cc_create_simple, command=command, text=text)
+
     @cc_create.command(name="random")
     @checks.mod_or_permissions(administrator=True)
     async def cc_create_random(self, ctx: commands.Context, command: str.lower):
@@ -381,6 +392,38 @@ class CustomCommandarr(commands.Cog):
 
         Example:
             - `[p]customcomarr create simple yourcommand Text you want`
+
+        **Arguments:**
+
+        - `<command>` The command executed to return the text. Cast to lowercase.
+        - `<text>` The text to return when executing the command. See guide for enhanced usage.
+        """
+        if any(char.isspace() for char in command):
+            # Haha, nice try
+            await ctx.send(_("Custom command names cannot have spaces in them."))
+            return
+        if command in (*self.bot.all_commands, *commands.RESERVED_COMMAND_NAMES):
+            await ctx.send(_("There already exists a bot command with the same name."))
+            return
+        try:
+            await self.commandobj.create(ctx=ctx, command=command, response=text)
+            await ctx.send(_("Custom command successfully added."))
+        except AlreadyExists:
+            await ctx.send(
+                _("This command already exists. Use `{command}` to edit it.").format(
+                    command=f"{ctx.clean_prefix}customcomarr edit"
+                )
+            )
+        except ArgParseError as e:
+            await ctx.send(e.args[0])
+
+    @cc_global_create.command(name="simple")
+    @checks.mod_or_permissions(administrator=True)
+    async def cc_global_create_simple(self, ctx, command: str.lower, *, text: str):
+        """Add a simple global custom command.
+
+        Example:
+            - `[p]customcomarr global create simple yourcommand Text you want`
 
         **Arguments:**
 
@@ -516,6 +559,47 @@ class CustomCommandarr(commands.Cog):
             await ctx.send(
                 _(
                     "There are no custom commands in this server."
+                    " Use `{command}` to start adding some."
+                ).format(command=f"{ctx.clean_prefix}customcomarr create")
+            )
+            return
+
+        results = self.prepare_command_list(ctx, sorted(cc_dict.items(), key=lambda t: t[0]))
+
+        if await ctx.embed_requested():
+            # We need a space before the newline incase the CC preview ends in link (GH-2295)
+            content = " \n".join(map("**{0[0]}** {0[1]}".format, results))
+            pages = list(pagify(content, page_length=1024))
+            embed_pages = []
+            for idx, page in enumerate(pages, start=1):
+                embed = discord.Embed(
+                    title=_("Custom Command List"),
+                    description=page,
+                    colour=await ctx.embed_colour(),
+                )
+                embed.set_footer(text=_("Page {num}/{total}").format(num=idx, total=len(pages)))
+                embed_pages.append(embed)
+            await menus.menu(ctx, embed_pages, menus.DEFAULT_CONTROLS)
+        else:
+            content = "\n".join(map("{0[0]:<12} : {0[1]}".format, results))
+            pages = list(map(box, pagify(content, page_length=2000, shorten_by=10)))
+            await menus.menu(ctx, pages, menus.DEFAULT_CONTROLS)
+
+
+    @global_.command(name="list")
+    @checks.bot_has_permissions(add_reactions=True)
+    async def cc_global_list(self, ctx: commands.Context):
+        """List all available global custom commands.
+
+        The list displays a preview of each global command's response, with
+        markdown escaped and newlines replaced with spaces.
+        """
+        cc_dict = await CommandObj.get_commands(self.config)
+
+        if not cc_dict:
+            await ctx.send(
+                _(
+                    "There are no global custom commands."
                     " Use `{command}` to start adding some."
                 ).format(command=f"{ctx.clean_prefix}customcomarr create")
             )
