@@ -200,7 +200,7 @@ class Parserr(commands.Cog):
 
     @staticmethod
     def _get_sonarr_embed(response):
-        embed = discord.Embed(title=f"Sonarr Parse Result", description="", colour=0xb3a447)
+        embed = discord.Embed(title=f"Sonarr Parse Result", description="", colour=0x0084ff)
         embed.add_field(name="Attempted Release Title", value=response["title"] or "-", inline=False)
         parsed_obj = response["parsedEpisodeInfo"]
         language = parsed_obj["language"]["name"] or "-"
@@ -219,7 +219,7 @@ class Parserr(commands.Cog):
 
     @staticmethod
     def _get_readarr_embed(response):
-        embed = discord.Embed(title=f"Readarr Parse Result", description="", colour=0x40a333)
+        embed = discord.Embed(title=f"Readarr Parse Result", description="", colour=0xff0000)
         embed.add_field(name="Attempted Release Title", value=response["title"] or "-", inline=False)
         parsed_obj = response["parsedBookInfo"]
         quality = parsed_obj["quality"]["quality"]["name"] or "-"
