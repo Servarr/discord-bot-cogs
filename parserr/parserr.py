@@ -39,18 +39,18 @@ class Parserr(commands.Cog):
                     parse_dict = json.loads(text)
                     version = "3.0"
                     parsed_obj = parse_dict["parsedMovieInfo"]
-                    language_string = ", ".join((o["name"] for o in parsed_obj["languages"])) or "None"
-                    quality = parsed_obj["quality"]["quality"]["name"] or "None"
+                    language_string = ", ".join((o["name"] for o in parsed_obj["languages"])) or "-"
+                    quality = parsed_obj["quality"]["quality"]["name"] or "-"
 
-                    embed=discord.Embed(title="Radarr Parse Result", description=f"Attempted to Parse {release}")
-                    embed.add_field(name="Movie Title", value=parsed_obj["movieTitle"], inline=True)
-                    embed.add_field(name="Year", value=parsed_obj["year"], inline=True)
-                    embed.add_field(name="Edition", value=parsed_obj["edition"], inline=True)
-                    embed.add_field(name="TMDBId", value=parsed_obj["tmdbId"], inline=False)
-                    embed.add_field(name="IMDbId", value=parsed_obj["imdbId"], inline=False)
+                    embed = discord.Embed(title="Radarr Parse Result", description=f"Attempted to Parse {release}", colour=await ctx.embed_colour())
+                    embed.add_field(name="Movie Title", value=parsed_obj["movieTitle"] or "-", inline=True)
+                    embed.add_field(name="Year", value=parsed_obj["year"] or "-", inline=True)
+                    embed.add_field(name="Edition", value=parsed_obj["edition"] or "-", inline=True)
+                    embed.add_field(name="TMDBId", value=parsed_obj["tmdbId"] or "-", inline=False)
+                    embed.add_field(name="IMDbId", value=parsed_obj["imdbId"] or "-", inline=False)
                     embed.add_field(name="Quality", value=quality, inline=True)
                     embed.add_field(name="Languages", value=language_string, inline=True)
-                    embed.add_field(name="Group", value=parsed_obj["releaseGroup"], inline=True)
+                    embed.add_field(name="Group", value=parsed_obj["releaseGroup"] or "-", inline=True)
                     embed.set_footer(text=f"Radarr Version {version} | Branch Nightly")
                     await ctx.send(embed=embed)
                 else:
