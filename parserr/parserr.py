@@ -192,6 +192,8 @@ class Parserr(commands.Cog):
         quality_proper = "True" if parsed_obj["quality"]["revision"]["version"] > 1 else "-" or "-"
         quality_repack = "True" if parsed_obj["quality"]["revision"]["isRepack"] is True else "-" or "-"
 
+        raise Exception(parsed_obj)
+
         embed.add_field(name="Movie Title", value=parsed_obj.get("movieTitle", "-"), inline=True)
         embed.add_field(name="Year", value=parsed_obj.get("year", "-"), inline=True)
         embed.add_field(name="Edition", value=parsed_obj.get("edition", "-"), inline=True)
