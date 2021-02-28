@@ -192,11 +192,11 @@ class Parserr(commands.Cog):
         quality_proper = "True" if parsed_obj["quality"]["revision"]["version"] > 1 else "-" or "-"
         quality_repack = "True" if parsed_obj["quality"]["revision"]["isRepack"] is True else "-" or "-"
 
-        embed.add_field(name="Movie Title", value=parsed_obj.get("movieTitle", "-"), inline=True)
+        embed.add_field(name="Movie Title", value=parsed_obj["movieTitle"] or "-", inline=True)
         embed.add_field(name="Year", value=parsed_obj["year"] or "-", inline=True)
-        embed.add_field(name="Edition", value=parsed_obj.get("edition", "-"), inline=True)
+        embed.add_field(name="Edition", value=parsed_obj["edition"] or "-", inline=True)
         embed.add_field(name="TMDBId", value=parsed_obj["tmdbId"] or "-", inline=True)
-        embed.add_field(name="IMDbId", value=parsed_obj.get("imdbId", "-"), inline=True)
+        embed.add_field(name="IMDbId", value=parsed_obj["imdbId"] or "-", inline=True)
         embed.add_field(name="Quality", value=quality, inline=False)
         embed.add_field(name="Proper", value=quality_proper, inline=True)
         embed.add_field(name="Real", value=quality_real, inline=True)
