@@ -72,7 +72,7 @@ class Parserr(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     parse_dict = json.loads(text)
-                    version = self._get_arr_version("radarr", "nightly")
+                    version = await self._get_arr_version("radarr", "V3", "nightly")
                     embed = self._get_radarr_embed(parse_dict)
                     embed.set_footer(text=f"Radarr Version {version} | Branch Nightly")
 
@@ -97,7 +97,7 @@ class Parserr(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     parse_dict = json.loads(text)
-                    version = self._get_arr_version("radarr", "testing")
+                    version = await self._get_arr_version("radarr", "V3", "testing")
                     embed = self._get_radarr_embed(parse_dict)
                     embed.set_footer(text=f"Radarr Version {version} | Branch Develop")
 
@@ -122,7 +122,7 @@ class Parserr(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     parse_dict = json.loads(text)
-                    version = self._get_arr_version("radarr", "release")
+                    version = await self._get_arr_version("radarr", "V3", "release")
                     embed = self._get_radarr_embed(parse_dict)
                     embed.set_footer(text=f"Radarr Version {version} | Branch Master")
 
@@ -149,7 +149,7 @@ class Parserr(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     parse_dict = json.loads(text)
-                    version = self._get_arr_version("sonarr", "nightly")
+                    version = await self._get_arr_version("sonarr", "V3", "nightly")
                     embed = self._get_sonarr_embed(parse_dict)
                     embed.set_footer(text=f"Sonarr Version {version} | Branch Nightly")
 
@@ -176,7 +176,7 @@ class Parserr(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     parse_dict = json.loads(text)
-                    version = self._get_arr_version("lidarr", "nightly")
+                    version = await self._get_arr_version("lidarr", "V1", "nightly")
                     embed = self._get_lidarr_embed(parse_dict)
                     embed.set_footer(text=f"Lidarr Version {version} | Branch Nightly")
 
@@ -203,7 +203,7 @@ class Parserr(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     parse_dict = json.loads(text)
-                    version = self._get_arr_version("readarr", "nightly")
+                    version = await self._get_arr_version("readarr", "V1", "nightly")
                     embed = self._get_readarr_embed(parse_dict)
                     embed.set_footer(text=f"Readarr Version {version} | Branch Nightly")
 
@@ -230,26 +230,14 @@ class Parserr(commands.Cog):
             log.error(f"General failure accessing site at url:\n\t{url}", exc_info=True)
             return None
 
-    async def _get_arr_version(self, arr: str, branch: str):
-        api_version = self._get_parse_api_version(arr)
-        url = f"https://dev.servarr.com/{arr}/{branch}/api/{api_version}/system/status?apikey={self._apikey}"
+    async def _get_arr_version(self, arr: str, api: str, branch: str):
+        url = f"https://dev.servarr.com/{arr}/{branch}/api/{api}/system/status?apikey={self._apikey}"
         text = await self._get_url_content(url)
         if text:
             parse_dict = json.loads(text)
             return parse_dict["version"] or ""
         else:
             return ""
-
-    @staticmethod
-    def _get_parse_api_version(server: str):
-        if server.lower() == "radarr":
-            return ""
-        elif server.lower() == "sonarr":
-            return "v3"
-        elif server.lower() == "lidarr":
-            return "v1"
-        elif server.lower() == "readarr":
-            return "v1"
 
     @staticmethod
     def _get_radarr_embed(response):
