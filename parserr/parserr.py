@@ -38,18 +38,18 @@ class Parserr(commands.Cog):
                 if text:
                     parse_dict = json.loads(text)
                     version = "3.0"
-                    language_string = ", ".join((o["Name"] for o in parse_dict["Languages"])) or "None"
-                    quality = parse_dict["Quality"]["Quality"]["Name"] or "None"
+                    language_string = ", ".join((o["name"] for o in parse_dict["languages"])) or "None"
+                    quality = parse_dict["quality"]["quality"]["name"] or "None"
 
-                    embed=discord.Embed(title="Radarr Parse Result", description="Attempted to Parse {release}")
-                    embed.add_field(name="Movie Title", value=parse_dict["MovieTitle"], inline=True)
-                    embed.add_field(name="Year", value=parse_dict["Year"], inline=True)
-                    embed.add_field(name="Edition", value=parse_dict["Edition"], inline=True)
-                    embed.add_field(name="TMDBId", value=parse_dict["TmdbId"], inline=False)
-                    embed.add_field(name="IMDbId", value=parse_dict["ImdbId"], inline=False)
+                    embed=discord.Embed(title="Radarr Parse Result", description=f"Attempted to Parse {release}")
+                    embed.add_field(name="Movie Title", value=parse_dict["movieTitle"], inline=True)
+                    embed.add_field(name="Year", value=parse_dict["year"], inline=True)
+                    embed.add_field(name="Edition", value=parse_dict["edition"], inline=True)
+                    embed.add_field(name="TMDBId", value=parse_dict["tmdbId"], inline=False)
+                    embed.add_field(name="IMDbId", value=parse_dict["imdbId"], inline=False)
                     embed.add_field(name="Quality", value=quality, inline=True)
                     embed.add_field(name="Languages", value=language_string, inline=True)
-                    embed.add_field(name="Group", value=parse_dict["ReleaseGroup"], inline=True)
+                    embed.add_field(name="Group", value=parse_dict["releaseGroup"], inline=True)
                     embed.set_footer(text=f"Radarr Version {version} | Branch Nightly")
                     await ctx.send(embed=embed)
                 else:
