@@ -38,6 +38,7 @@ class Parserr(commands.Cog):
                 if text:
                     parse_dict = json.loads(text)
                     version = "3.0"
+                    raise Exception(parse_dict)
                     language_string = ", ".join((o["name"] for o in parse_dict["languages"])) or "None"
                     quality = parse_dict["quality"]["quality"]["name"] or "None"
 
