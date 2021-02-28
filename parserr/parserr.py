@@ -144,7 +144,7 @@ class Parserr(commands.Cog):
                 if text:
                     parse_dict = json.loads(text)
                     version = "3.0"
-                    embed = self._get_sonarr_embed(parse_dict)
+                    embed = self._get_readarr_embed(parse_dict)
                     embed.set_footer(text=f"Readarr Version {version} | Branch Nightly")
 
                     await ctx.send(embed=embed)
