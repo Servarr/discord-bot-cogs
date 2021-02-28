@@ -72,7 +72,7 @@ class Parserr(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     parse_dict = json.loads(text)
-                    version = "3.0"
+                    version = self._get_arr_version("radarr", "nightly")
                     embed = self._get_radarr_embed(parse_dict)
                     embed.set_footer(text=f"Radarr Version {version} | Branch Nightly")
 
@@ -84,7 +84,7 @@ class Parserr(commands.Cog):
 
     @_radarr_parse.command(name="develop")
     async def _develop_radarr_parse(self, ctx: commands.Context, release: str):
-        """Make a Radarr nightly parse call
+        """Make a Radarr develop branch parse call
 
         **Arguments:**
 
@@ -97,7 +97,7 @@ class Parserr(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     parse_dict = json.loads(text)
-                    version = "3.0"
+                    version = self._get_arr_version("radarr", "testing")
                     embed = self._get_radarr_embed(parse_dict)
                     embed.set_footer(text=f"Radarr Version {version} | Branch Develop")
 
@@ -109,7 +109,7 @@ class Parserr(commands.Cog):
 
     @_radarr_parse.command(name="master")
     async def _master_radarr_parse(self, ctx: commands.Context, release: str):
-        """Make a Radarr nightly parse call
+        """Make a Radarr master branch parse call
 
         **Arguments:**
 
@@ -122,7 +122,7 @@ class Parserr(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     parse_dict = json.loads(text)
-                    version = "3.0"
+                    version = self._get_arr_version("radarr", "release")
                     embed = self._get_radarr_embed(parse_dict)
                     embed.set_footer(text=f"Radarr Version {version} | Branch Master")
 
@@ -149,7 +149,7 @@ class Parserr(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     parse_dict = json.loads(text)
-                    version = "3.0"
+                    version = self._get_arr_version("sonarr", "nightly")
                     embed = self._get_sonarr_embed(parse_dict)
                     embed.set_footer(text=f"Sonarr Version {version} | Branch Nightly")
 
@@ -176,7 +176,7 @@ class Parserr(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     parse_dict = json.loads(text)
-                    version = "3.0"
+                    version = self._get_arr_version("lidarr", "nightly")
                     embed = self._get_lidarr_embed(parse_dict)
                     embed.set_footer(text=f"Lidarr Version {version} | Branch Nightly")
 
@@ -203,7 +203,7 @@ class Parserr(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     parse_dict = json.loads(text)
-                    version = "3.0"
+                    version = self._get_arr_version("readarr", "nightly")
                     embed = self._get_readarr_embed(parse_dict)
                     embed.set_footer(text=f"Readarr Version {version} | Branch Nightly")
 
@@ -230,15 +230,25 @@ class Parserr(commands.Cog):
             log.error(f"General failure accessing site at url:\n\t{url}", exc_info=True)
             return None
 
-    @staticmethod
-    def _get_parse_api_version(server):
-        if server == "Radarr":
+    async def _get_arr_version(self, arr: str, branch: str):
+        api_version = self._get_parse_api_version(arr)
+        url = f"https://dev.servarr.com/{arr}/{branch}/api/{api_version}/system/status?apikey={self._apikey}"
+        text = await self._get_url_content(url)
+        if text:
+            parse_dict = json.loads(text)
+            return parse_dict["version"] or ""
+        else:
             return ""
-        elif server == "Sonarr":
+
+    @staticmethod
+    def _get_parse_api_version(server: str):
+        if server.lower() == "radarr":
+            return ""
+        elif server.lower() == "sonarr":
             return "v3"
-        elif server == "Lidarr":
+        elif server.lower() == "lidarr":
             return "v1"
-        elif server == "Readarr":
+        elif server.lower() == "readarr":
             return "v1"
 
     @staticmethod
