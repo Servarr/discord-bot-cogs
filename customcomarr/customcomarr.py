@@ -791,7 +791,7 @@ class CustomCommandarr(commands.Cog):
             "channel": message.channel,
             "guild": message.guild,
             "server": message.guild,
-            "lserver": message.guild.lower(),
+            "lserver": message.guild.name.lower() if message.guild else message.guild,
         }
         if result in objects:
             return str(objects[result])
