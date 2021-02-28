@@ -195,7 +195,7 @@ class Parserr(commands.Cog):
         embed.add_field(name="Movie Title", value=parsed_obj.get("movieTitle", "-"), inline=True)
         embed.add_field(name="Year", value=parsed_obj.get("year", "-"), inline=True)
         embed.add_field(name="Edition", value=parsed_obj.get("edition", "-"), inline=True)
-        embed.add_field(name="TMDBId", value=parsed_obj.get("tmdbId", "-"), inline=True)
+        embed.add_field(name="TMDBId", value=parsed_obj["tmdbId"] or "-", inline=True)
         embed.add_field(name="IMDbId", value=parsed_obj.get("imdbId", "-"), inline=True)
         embed.add_field(name="Quality", value=quality, inline=False)
         embed.add_field(name="Proper", value=quality_proper, inline=True)
@@ -218,7 +218,7 @@ class Parserr(commands.Cog):
         episode_string = ", ".join((str(o) for o in parsed_obj["episodeNumbers"])) or "-"
 
         embed.add_field(name="Series Title", value=parsed_obj.get("seriesTitle", "-"), inline=True)
-        embed.add_field(name="Season", value=parsed_obj.get("seasonNumber", "-"), inline=True)
+        embed.add_field(name="Season", value=parsed_obj["seasonNumber"] or "-", inline=True)
         embed.add_field(name="Episode", value=episode_string, inline=True)
         embed.add_field(name="Full Season", value=parsed_obj.get("fullSeason", "-"), inline=True)
         embed.add_field(name="Special", value=parsed_obj.get("special", "-"), inline=True)
