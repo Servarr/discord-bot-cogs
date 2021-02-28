@@ -29,29 +29,35 @@ class Parserr(commands.Cog):
         """Parse release names from Arrs.
 
         If a program and branch are not specified, the server default will be used.
+
+        **Arguments:**
+
+        - `<release>` The release title to parse.
         """
         async with ctx.typing():
-            url = f"https://dev.servarr.com/radarr/nightly/api/parse?apikey={self._apikey}&title={release}"
+            url = f"https://dev.servarr.com/{ctx.guild}/nightly/api/parse?apikey={self._apikey}&title={release}"
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
                 if text:
                     parse_dict = json.loads(text)
                     version = "3.0"
+                    embed = discord.Embed(title=f"{ctx.guild.name} Parse Result", description="", colour=await ctx.embed_colour())
+                    embed.add_field(name="Attempted Release Title", value=parse_dict["title"] or "-", inline=False)
+
                     parsed_obj = parse_dict["parsedMovieInfo"]
                     language_string = ", ".join((o["name"] for o in parsed_obj["languages"])) or "-"
                     quality = parsed_obj["quality"]["quality"]["name"] or "-"
-
-                    embed = discord.Embed(title="Radarr Parse Result", description=f"Attempted to Parse {release}", colour=await ctx.embed_colour())
                     embed.add_field(name="Movie Title", value=parsed_obj["movieTitle"] or "-", inline=True)
                     embed.add_field(name="Year", value=parsed_obj["year"] or "-", inline=True)
                     embed.add_field(name="Edition", value=parsed_obj["edition"] or "-", inline=True)
-                    embed.add_field(name="TMDBId", value=parsed_obj["tmdbId"] or "-", inline=False)
-                    embed.add_field(name="IMDbId", value=parsed_obj["imdbId"] or "-", inline=False)
+                    embed.add_field(name="TMDBId", value=parsed_obj["tmdbId"] or "-", inline=True)
+                    embed.add_field(name="IMDbId", value=parsed_obj["imdbId"] or "-", inline=True)
                     embed.add_field(name="Quality", value=quality, inline=True)
                     embed.add_field(name="Languages", value=language_string, inline=True)
                     embed.add_field(name="Group", value=parsed_obj["releaseGroup"] or "-", inline=True)
-                    embed.set_footer(text=f"Radarr Version {version} | Branch Nightly")
+
+                    embed.set_footer(text=f"{ctx.guild} Version {version} | Branch Nightly")
                     await ctx.send(embed=embed)
                 else:
                     await ctx.send("Parse error")
