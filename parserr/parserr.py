@@ -184,7 +184,7 @@ class Parserr(commands.Cog):
     @staticmethod
     def _get_radarr_embed(response):
         embed = discord.Embed(title=f"Radarr Parse Result", description="", colour=0xb3a447)
-        embed.add_field(name="Attempted Release Title", value=response["title"] or "-", inline=False)
+        embed.add_field(name="Attempted Release Title", value=f"```{response['title']  or '-'}```", inline=False)
         parsed_obj = response["parsedMovieInfo"]
         language_string = ", ".join((o["name"] for o in parsed_obj["languages"])) or "-"
         quality = parsed_obj["quality"]["quality"]["name"] or "-"
@@ -195,20 +195,20 @@ class Parserr(commands.Cog):
         embed.add_field(name="Movie Title", value=parsed_obj["movieTitle"] or "-", inline=True)
         embed.add_field(name="Year", value=parsed_obj["year"] or "-", inline=True)
         embed.add_field(name="Edition", value=parsed_obj["edition"] or "-", inline=True)
-        embed.add_field(name="TMDBId", value=parsed_obj["tmdbId"] or "-", inline=True)
-        embed.add_field(name="IMDbId", value=parsed_obj["imdbId"] or "-", inline=True)
+        embed.add_field(name="TMDBId", value=parsed_obj["tmdbId"] or "-", inline=False)
+        embed.add_field(name="IMDbId", value=parsed_obj["imdbId"] or "-", inline=False)
         embed.add_field(name="Quality", value=quality, inline=False)
         embed.add_field(name="Proper", value=quality_proper, inline=True)
         embed.add_field(name="Real", value=quality_real, inline=True)
         embed.add_field(name="Repack", value=quality_repack, inline=True)
-        embed.add_field(name="Languages", value=language_string, inline=True)
-        embed.add_field(name="Group", value=parsed_obj.get("releaseGroup", "-"), inline=True)
+        embed.add_field(name="Languages", value=language_string, inline=False)
+        embed.add_field(name="Release Group", value=parsed_obj.get("releaseGroup", "-"), inline=False)
         return embed
 
     @staticmethod
     def _get_sonarr_embed(response):
         embed = discord.Embed(title=f"Sonarr Parse Result", description="", colour=0x0084ff)
-        embed.add_field(name="Attempted Release Title", value=response["title"] or "-", inline=False)
+        embed.add_field(name="Attempted Release Title", value=f"```{response['title']  or '-'}```", inline=False)
         parsed_obj = response["parsedEpisodeInfo"]
         language = parsed_obj["language"]["name"] or "-"
         quality = parsed_obj["quality"]["quality"]["name"] or "-"
@@ -227,13 +227,13 @@ class Parserr(commands.Cog):
         embed.add_field(name="Real", value=quality_real, inline=True)
         embed.add_field(name="Repack", value=quality_repack, inline=True)
         embed.add_field(name="Language", value=language, inline=False)
-        embed.add_field(name="Group", value=parsed_obj.get("releaseGroup", "-"), inline=True)
+        embed.add_field(name="Release Group", value=parsed_obj.get("releaseGroup", "-"), inline=False)
         return embed
 
     @staticmethod
     def _get_readarr_embed(response):
         embed = discord.Embed(title=f"Readarr Parse Result", description="", colour=0xff0000)
-        embed.add_field(name="Attempted Release Title", value=response["title"] or "-", inline=False)
+        embed.add_field(name="Attempted Release Title", value=f"```{response['title']  or '-'}```", inline=False)
         parsed_obj = response["parsedBookInfo"]
         quality = parsed_obj["quality"]["quality"]["name"] or "-"
         quality_real = "True" if parsed_obj["quality"]["revision"]["real"] > 0 else "-" or "-"
@@ -247,13 +247,13 @@ class Parserr(commands.Cog):
         embed.add_field(name="Proper", value=quality_proper, inline=True)
         embed.add_field(name="Real", value=quality_real, inline=True)
         embed.add_field(name="Repack", value=quality_repack, inline=True)
-        embed.add_field(name="Group", value=parsed_obj.get("releaseGroup", "-"), inline=True)
+        embed.add_field(name="Release Group", value=parsed_obj.get("releaseGroup", "-"), inline=False)
         return embed
 
     @staticmethod
     def _get_lidarr_embed(response):
         embed = discord.Embed(title=f"Lidarr Parse Result", description="", colour=0x40a333)
-        embed.add_field(name="Attempted Release Title", value=response["title"] or "-", inline=False)
+        embed.add_field(name="Attempted Release Title", value=f"```{response['title']  or '-'}```", inline=False)
         parsed_obj = response["parsedAlbumInfo"]
         quality = parsed_obj["quality"]["quality"]["name"] or "-"
         quality_real = "True" if parsed_obj["quality"]["revision"]["real"] > 0 else "-" or "-"
@@ -268,7 +268,7 @@ class Parserr(commands.Cog):
         embed.add_field(name="Proper", value=quality_proper, inline=True)
         embed.add_field(name="Real", value=quality_real, inline=True)
         embed.add_field(name="Repack", value=quality_repack, inline=True)
-        embed.add_field(name="Group", value=parsed_obj.get("releaseGroup", "-"), inline=True)
+        embed.add_field(name="Release Group", value=parsed_obj.get("releaseGroup", "-"), inline=False)
         return embed
 
     @staticmethod
