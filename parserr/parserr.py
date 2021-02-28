@@ -43,13 +43,23 @@ class Parserr(commands.Cog):
         elif server == "Readarr":
             await ctx.invoke(self._readarr_parse, release=release)
         else:
-            await ctx.invoke(self._radarr_parse, release=release)
+            await ctx.invoke(self._nightly_radarr_parse, release=release)
 
-    @parse.command(name="radarr")
+    @parse.group(name="radarr", invoke_without_command=True)
     async def _radarr_parse(self, ctx: commands.Context, release: str):
         """Make a Radarr parse call
 
         If a branch is not specified, the nightly branch will be used.
+
+        **Arguments:**
+
+        - `<release>` The release title to parse.
+        """
+        await ctx.invoke(self._nightly_radarr_parse, release=release)
+
+    @_radarr_parse.command(name="nightly")
+    async def _nightly_radarr_parse(self, ctx: commands.Context, release: str):
+        """Make a Radarr nightly parse call
 
         **Arguments:**
 
@@ -65,6 +75,56 @@ class Parserr(commands.Cog):
                     version = "3.0"
                     embed = self._get_radarr_embed(parse_dict)
                     embed.set_footer(text=f"Radarr Version {version} | Branch Nightly")
+
+                    await ctx.send(embed=embed)
+                else:
+                    await ctx.send("Parse error")
+            else:
+                return
+
+    @_radarr_parse.command(name="develop")
+    async def _develop_radarr_parse(self, ctx: commands.Context, release: str):
+        """Make a Radarr nightly parse call
+
+        **Arguments:**
+
+        - `<release>` The release title to parse.
+        """
+        async with ctx.typing():
+            url = f"https://dev.servarr.com/radarr/testing/api/parse?apikey={self._apikey}&title={release}"
+            valid_url = await self._valid_url(ctx, url)
+            if valid_url:
+                text = await self._get_url_content(url)
+                if text:
+                    parse_dict = json.loads(text)
+                    version = "3.0"
+                    embed = self._get_radarr_embed(parse_dict)
+                    embed.set_footer(text=f"Radarr Version {version} | Branch Develop")
+
+                    await ctx.send(embed=embed)
+                else:
+                    await ctx.send("Parse error")
+            else:
+                return
+
+    @_radarr_parse.command(name="master")
+    async def _master_radarr_parse(self, ctx: commands.Context, release: str):
+        """Make a Radarr nightly parse call
+
+        **Arguments:**
+
+        - `<release>` The release title to parse.
+        """
+        async with ctx.typing():
+            url = f"https://dev.servarr.com/radarr/release/api/parse?apikey={self._apikey}&title={release}"
+            valid_url = await self._valid_url(ctx, url)
+            if valid_url:
+                text = await self._get_url_content(url)
+                if text:
+                    parse_dict = json.loads(text)
+                    version = "3.0"
+                    embed = self._get_radarr_embed(parse_dict)
+                    embed.set_footer(text=f"Radarr Version {version} | Branch Master")
 
                     await ctx.send(embed=embed)
                 else:
