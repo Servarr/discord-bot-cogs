@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 
 class RadarrMeta(commands.Cog):
@@ -26,7 +26,7 @@ class RadarrMeta(commands.Cog):
     @commands.command()
     async def tmdb(self, ctx, tmdb_id: str):
         """
-        Input a URL to read.
+        Input a TMDbId to lookup.
         """
         async with ctx.typing():
             url = "https://radarrapi.servarr.com/v1/movie/" + tmdb_id
@@ -53,7 +53,7 @@ class RadarrMeta(commands.Cog):
     @commands.command()
     async def imdb(self, ctx, imdb_id: str):
         """
-        Input a URL to read.
+        Input a IMDb Id to lookup.
         """
         async with ctx.typing():
             url = "https://radarrapi.servarr.com/v1/movie/imdb/" + imdb_id
