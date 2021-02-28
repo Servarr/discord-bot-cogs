@@ -24,7 +24,7 @@ class Parserr(commands.Cog):
         self._headers = {'User-Agent': 'Python/3.8'}
         self._apikey = os.getenv("ARR_API_KEY")
 
-    @commands.command()
+    @commands.group(invoke_without_command=True)
     async def parse(self, ctx, release: str):
         """Parse release names from Arrs.
 
@@ -34,30 +34,119 @@ class Parserr(commands.Cog):
 
         - `<release>` The release title to parse.
         """
+        server = self._valid_server(ctx.message.guild)
+
+        if server == "Sonarr":
+            await ctx.invoke(self._sonarr_parse, release=release)
+        elif server == "Lidarr":
+            await ctx.invoke(self._lidarr_parse, release=release)
+        elif server == "Readarr":
+            await ctx.invoke(self._readarr_parse, release=release)
+        else:
+            await ctx.invoke(self._radarr_parse, release=release)
+
+    @parse.command(name="radarr")
+    async def _radarr_parse(self, ctx: commands.Context, release: str):
+        """Make a Radarr parse call
+
+        If a branch is not specified, the nightly branch will be used.
+
+        **Arguments:**
+
+        - `<release>` The release title to parse.
+        """
         async with ctx.typing():
-            url = f"https://dev.servarr.com/{ctx.guild}/nightly/api/parse?apikey={self._apikey}&title={release}"
+            url = f"https://dev.servarr.com/radarr/nightly/api/parse?apikey={self._apikey}&title={release}"
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
                 if text:
                     parse_dict = json.loads(text)
                     version = "3.0"
-                    embed = discord.Embed(title=f"{ctx.guild.name} Parse Result", description="", colour=await ctx.embed_colour())
-                    embed.add_field(name="Attempted Release Title", value=parse_dict["title"] or "-", inline=False)
+                    embed = self._get_radarr_embed(parse_dict)
+                    embed.set_footer(text=f"Radarr Version {version} | Branch Nightly")
 
-                    parsed_obj = parse_dict["parsedMovieInfo"]
-                    language_string = ", ".join((o["name"] for o in parsed_obj["languages"])) or "-"
-                    quality = parsed_obj["quality"]["quality"]["name"] or "-"
-                    embed.add_field(name="Movie Title", value=parsed_obj["movieTitle"] or "-", inline=True)
-                    embed.add_field(name="Year", value=parsed_obj["year"] or "-", inline=True)
-                    embed.add_field(name="Edition", value=parsed_obj["edition"] or "-", inline=True)
-                    embed.add_field(name="TMDBId", value=parsed_obj["tmdbId"] or "-", inline=True)
-                    embed.add_field(name="IMDbId", value=parsed_obj["imdbId"] or "-", inline=True)
-                    embed.add_field(name="Quality", value=quality, inline=True)
-                    embed.add_field(name="Languages", value=language_string, inline=True)
-                    embed.add_field(name="Group", value=parsed_obj["releaseGroup"] or "-", inline=True)
+                    await ctx.send(embed=embed)
+                else:
+                    await ctx.send("Parse error")
+            else:
+                return
 
-                    embed.set_footer(text=f"{ctx.guild} Version {version} | Branch Nightly")
+    @parse.command(name="sonarr")
+    async def _sonarr_parse(self, ctx: commands.Context, release: str):
+        """Make a Sonarr parse call
+
+        If a branch is not specified, the nightly branch will be used.
+
+        **Arguments:**
+
+        - `<release>` The release title to parse.
+        """
+        async with ctx.typing():
+            url = f"https://dev.servarr.com/sonarr/nightly/api/v3/parse?apikey={self._apikey}&title={release}"
+            valid_url = await self._valid_url(ctx, url)
+            if valid_url:
+                text = await self._get_url_content(url)
+                if text:
+                    parse_dict = json.loads(text)
+                    version = "3.0"
+                    embed = self._get_sonarr_embed(parse_dict)
+                    embed.set_footer(text=f"Sonarr Version {version} | Branch Nightly")
+
+                    await ctx.send(embed=embed)
+                else:
+                    await ctx.send("Parse error")
+            else:
+                return
+
+    @parse.command(name="lidarr")
+    async def _lidarr_parse(self, ctx: commands.Context, release: str):
+        """Make a Lidarr parse call
+
+        If a branch is not specified, the nightly branch will be used.
+
+        **Arguments:**
+
+        - `<release>` The release title to parse.
+        """
+        async with ctx.typing():
+            url = f"https://dev.servarr.com/lidarr/nightly/api/v1/parse?apikey={self._apikey}&title={release}"
+            valid_url = await self._valid_url(ctx, url)
+            if valid_url:
+                text = await self._get_url_content(url)
+                if text:
+                    parse_dict = json.loads(text)
+                    version = "3.0"
+                    embed = self._get_lidarr_embed(parse_dict)
+                    embed.set_footer(text=f"Lidarr Version {version} | Branch Nightly")
+
+                    await ctx.send(embed=embed)
+                else:
+                    await ctx.send("Parse error")
+            else:
+                return
+
+    @parse.command(name="readarr")
+    async def _readarr_parse(self, ctx: commands.Context, release: str):
+        """Make a Readarr parse call
+
+        If a branch is not specified, the nightly branch will be used.
+
+        **Arguments:**
+
+        - `<release>` The release title to parse.
+        """
+        async with ctx.typing():
+            url = f"https://dev.servarr.com/readarr/nightly/api/v1/parse?apikey={self._apikey}&title={release}"
+            valid_url = await self._valid_url(ctx, url)
+            if valid_url:
+                text = await self._get_url_content(url)
+                if text:
+                    parse_dict = json.loads(text)
+                    version = "3.0"
+                    embed = self._get_sonarr_embed(parse_dict)
+                    embed.set_footer(text=f"Readarr Version {version} | Branch Nightly")
+
                     await ctx.send(embed=embed)
                 else:
                     await ctx.send("Parse error")
@@ -80,6 +169,91 @@ class Parserr(commands.Cog):
         except Exception:
             log.error(f"General failure accessing site at url:\n\t{url}", exc_info=True)
             return None
+
+    @staticmethod
+    def _get_parse_api_version(server):
+        if server == "Radarr":
+            return ""
+        elif server == "Sonarr":
+            return "v3"
+        elif server == "Lidarr":
+            return "v1"
+        elif server == "Readarr":
+            return "v1"
+
+    @staticmethod
+    def _get_radarr_embed(response):
+        embed = discord.Embed(title=f"Radarr Parse Result", description="", colour=0xb3a447)
+        embed.add_field(name="Attempted Release Title", value=response["title"] or "-", inline=False)
+        parsed_obj = response["parsedMovieInfo"]
+        language_string = ", ".join((o["name"] for o in parsed_obj["languages"])) or "-"
+        quality = parsed_obj["quality"]["quality"]["name"] or "-"
+        embed.add_field(name="Movie Title", value=parsed_obj["movieTitle"] or "-", inline=True)
+        embed.add_field(name="Year", value=parsed_obj["year"] or "-", inline=True)
+        embed.add_field(name="Edition", value=parsed_obj["edition"] or "-", inline=True)
+        embed.add_field(name="TMDBId", value=parsed_obj["tmdbId"] or "-", inline=True)
+        embed.add_field(name="IMDbId", value=parsed_obj["imdbId"] or "-", inline=True)
+        embed.add_field(name="Quality", value=quality, inline=True)
+        embed.add_field(name="Languages", value=language_string, inline=True)
+        embed.add_field(name="Group", value=parsed_obj["releaseGroup"] or "-", inline=True)
+        return embed
+
+    @staticmethod
+    def _get_sonarr_embed(response):
+        embed = discord.Embed(title=f"Sonarr Parse Result", description="", colour=0xb3a447)
+        embed.add_field(name="Attempted Release Title", value=response["title"] or "-", inline=False)
+        parsed_obj = response["parsedEpisodeInfo"]
+        language = parsed_obj["language"]["name"] or "-"
+        quality = parsed_obj["quality"]["quality"]["name"] or "-"
+        episode_string = ", ".join((str(o) for o in parsed_obj["episodeNumbers"])) or "-"
+
+        embed.add_field(name="Series Title", value=parsed_obj["seriesTitle"] or "-", inline=True)
+        embed.add_field(name="Season", value=parsed_obj["seasonNumber"] or "-", inline=True)
+        embed.add_field(name="Episode", value=episode_string, inline=True)
+        embed.add_field(name="Full Season", value=parsed_obj["fullSeason"] or "-", inline=True)
+        embed.add_field(name="Special", value=parsed_obj["special"] or "-", inline=True)
+        embed.add_field(name="Quality", value=quality, inline=True)
+        embed.add_field(name="Language", value=language, inline=True)
+        embed.add_field(name="Group", value=parsed_obj["releaseGroup"] or "-", inline=True)
+        return embed
+
+    @staticmethod
+    def _get_readarr_embed(response):
+        embed = discord.Embed(title=f"Readarr Parse Result", description="", colour=0x40a333)
+        embed.add_field(name="Attempted Release Title", value=response["title"] or "-", inline=False)
+        parsed_obj = response["parsedBookInfo"]
+        quality = parsed_obj["quality"]["quality"]["name"] or "-"
+        embed.add_field(name="Author Name", value=parsed_obj["authorName"] or "-", inline=True)
+        embed.add_field(name="Book Title", value=parsed_obj["bookTitle"] or "-", inline=True)
+        embed.add_field(name="Release Date", value=parsed_obj["releaseDate"] or "-", inline=True)
+        embed.add_field(name="Quality", value=quality, inline=True)
+        embed.add_field(name="Group", value=parsed_obj["releaseGroup"] or "-", inline=True)
+        return embed
+
+    @staticmethod
+    def _get_lidarr_embed(response):
+        embed = discord.Embed(title=f"Lidarr Parse Result", description="", colour=0x40a333)
+        embed.add_field(name="Attempted Release Title", value=response["title"] or "-", inline=False)
+        parsed_obj = response["parsedAlbumInfo"]
+        quality = parsed_obj["quality"]["quality"]["name"] or "-"
+        embed.add_field(name="Artist Name", value=parsed_obj["artistName"] or "-", inline=True)
+        embed.add_field(name="Album Title", value=parsed_obj["albumTitle"] or "-", inline=True)
+        embed.add_field(name="Release Date", value=parsed_obj["releaseDate"] or "-", inline=True)
+        embed.add_field(name="Discography", value=parsed_obj["discography"] or "-", inline=True)
+        embed.add_field(name="Quality", value=quality, inline=True)
+        embed.add_field(name="Group", value=parsed_obj["releaseGroup"] or "-", inline=True)
+        return embed
+
+    @staticmethod
+    def _valid_server(server: str):
+        servers = ["radarr", "lidarr", "sonarr", "readarr"]
+        if not server:
+            return "Radarr"
+
+        if server.lower() in servers:
+            return server
+        else:
+            return "Radarr"
 
     async def _valid_url(self, ctx, url: str):
         try:
