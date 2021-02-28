@@ -222,6 +222,7 @@ class Parserr(commands.Cog):
         embed.add_field(name="Episode", value=episode_string, inline=True)
         embed.add_field(name="Full Season", value=parsed_obj.get("fullSeason", "-"), inline=True)
         embed.add_field(name="Special", value=parsed_obj.get("special", "-"), inline=True)
+        embed.add_field(name="Daily", value=parsed_obj.get("isDaily", "-"), inline=True)
         embed.add_field(name="Quality", value=quality, inline=False)
         embed.add_field(name="Proper", value=quality_proper, inline=True)
         embed.add_field(name="Real", value=quality_real, inline=True)
