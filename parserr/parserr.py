@@ -188,12 +188,19 @@ class Parserr(commands.Cog):
         parsed_obj = response["parsedMovieInfo"]
         language_string = ", ".join((o["name"] for o in parsed_obj["languages"])) or "-"
         quality = parsed_obj["quality"]["quality"]["name"] or "-"
+        quality_real = "True" if parsed_obj["quality"]["revision"]["real"] > 0 else "-" or "-"
+        quality_proper = "True" if parsed_obj["quality"]["revision"]["version"] > 1 else "-" or "-"
+        quality_repack = "True" if parsed_obj["quality"]["revision"]["isRepack"] is True else "-" or "-"
+
         embed.add_field(name="Movie Title", value=parsed_obj["movieTitle"] or "-", inline=True)
         embed.add_field(name="Year", value=parsed_obj["year"] or "-", inline=True)
         embed.add_field(name="Edition", value=parsed_obj["edition"] or "-", inline=True)
         embed.add_field(name="TMDBId", value=parsed_obj["tmdbId"] or "-", inline=True)
         embed.add_field(name="IMDbId", value=parsed_obj["imdbId"] or "-", inline=True)
         embed.add_field(name="Quality", value=quality, inline=False)
+        embed.add_field(name="Proper", value=quality_proper, inline=True)
+        embed.add_field(name="Real", value=quality_real, inline=True)
+        embed.add_field(name="Repack", value=quality_repack, inline=True)
         embed.add_field(name="Languages", value=language_string, inline=True)
         embed.add_field(name="Group", value=parsed_obj["releaseGroup"] or "-", inline=True)
         return embed
@@ -206,7 +213,7 @@ class Parserr(commands.Cog):
         language = parsed_obj["language"]["name"] or "-"
         quality = parsed_obj["quality"]["quality"]["name"] or "-"
         quality_real = "True" if parsed_obj["quality"]["revision"]["real"] > 0 else "-" or "-"
-        quality_proper = "True" if parsed_obj["quality"]["revision"]["version"] > 0 else "-" or "-"
+        quality_proper = "True" if parsed_obj["quality"]["revision"]["version"] > 1 else "-" or "-"
         quality_repack = "True" if parsed_obj["quality"]["revision"]["isRepack"] is True else "-" or "-"
         episode_string = ", ".join((str(o) for o in parsed_obj["episodeNumbers"])) or "-"
 
@@ -229,10 +236,17 @@ class Parserr(commands.Cog):
         embed.add_field(name="Attempted Release Title", value=response["title"] or "-", inline=False)
         parsed_obj = response["parsedBookInfo"]
         quality = parsed_obj["quality"]["quality"]["name"] or "-"
+        quality_real = "True" if parsed_obj["quality"]["revision"]["real"] > 0 else "-" or "-"
+        quality_proper = "True" if parsed_obj["quality"]["revision"]["version"] > 1 else "-" or "-"
+        quality_repack = "True" if parsed_obj["quality"]["revision"]["isRepack"] is True else "-" or "-"
+
         embed.add_field(name="Author Name", value=parsed_obj["authorName"] or "-", inline=True)
         embed.add_field(name="Book Title", value=parsed_obj["bookTitle"] or "-", inline=True)
         embed.add_field(name="Release Date", value=parsed_obj["releaseDate"] or "-", inline=True)
         embed.add_field(name="Quality", value=quality, inline=False)
+        embed.add_field(name="Proper", value=quality_proper, inline=True)
+        embed.add_field(name="Real", value=quality_real, inline=True)
+        embed.add_field(name="Repack", value=quality_repack, inline=True)
         embed.add_field(name="Group", value=parsed_obj["releaseGroup"] or "-", inline=True)
         return embed
 
@@ -242,11 +256,18 @@ class Parserr(commands.Cog):
         embed.add_field(name="Attempted Release Title", value=response["title"] or "-", inline=False)
         parsed_obj = response["parsedAlbumInfo"]
         quality = parsed_obj["quality"]["quality"]["name"] or "-"
+        quality_real = "True" if parsed_obj["quality"]["revision"]["real"] > 0 else "-" or "-"
+        quality_proper = "True" if parsed_obj["quality"]["revision"]["version"] > 1 else "-" or "-"
+        quality_repack = "True" if parsed_obj["quality"]["revision"]["isRepack"] is True else "-" or "-"
+
         embed.add_field(name="Artist Name", value=parsed_obj["artistName"] or "-", inline=True)
         embed.add_field(name="Album Title", value=parsed_obj["albumTitle"] or "-", inline=True)
         embed.add_field(name="Release Date", value=parsed_obj["releaseDate"] or "-", inline=True)
         embed.add_field(name="Discography", value=parsed_obj["discography"] or "-", inline=True)
         embed.add_field(name="Quality", value=quality, inline=False)
+        embed.add_field(name="Proper", value=quality_proper, inline=True)
+        embed.add_field(name="Real", value=quality_real, inline=True)
+        embed.add_field(name="Repack", value=quality_repack, inline=True)
         embed.add_field(name="Group", value=parsed_obj["releaseGroup"] or "-", inline=True)
         return embed
 
