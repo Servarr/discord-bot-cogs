@@ -34,7 +34,7 @@ class Parserr(commands.Cog):
 
         - `<release>` The release title to parse.
         """
-        server = self._valid_server(ctx.message.guild)
+        server = self._valid_server(ctx.message.guild.name)
 
         if server == "Sonarr":
             await ctx.invoke(self._sonarr_parse, release=release)
