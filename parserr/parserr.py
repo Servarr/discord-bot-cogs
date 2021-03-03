@@ -218,7 +218,7 @@ class Parserr(commands.Cog):
     async def _get_url_content(self, url: str):
         try:
             timeout = aiohttp.ClientTimeout(total=20)
-            async with aiohttp.ClientSession(headers=self._headers, timeout=timeout, auth=aiohttp.BasicAuth(self._user, self._password) as session:
+            async with aiohttp.ClientSession(headers=self._headers, timeout=timeout, auth=aiohttp.BasicAuth(self._user, self._password)) as session:
                 async with session.get(url) as resp:
                     text = await resp.text()
             return text
