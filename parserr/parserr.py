@@ -23,6 +23,8 @@ class Parserr(commands.Cog):
 
         self._headers = {'User-Agent': 'Python/3.8'}
         self._apikey = os.getenv("ARR_API_KEY")
+        self._user = os.getenv("ARR_USER")
+        self._password = os.getenv("ARR_PASSWORD")
 
     @commands.group(invoke_without_command=True)
     async def parse(self, ctx, release: str):
@@ -216,7 +218,7 @@ class Parserr(commands.Cog):
     async def _get_url_content(self, url: str):
         try:
             timeout = aiohttp.ClientTimeout(total=20)
-            async with aiohttp.ClientSession(headers=self._headers, timeout=timeout) as session:
+            async with aiohttp.ClientSession(headers=self._headers, timeout=timeout, auth=aiohttp.BasicAuth(self._user, self._password) as session:
                 async with session.get(url) as resp:
                     text = await resp.text()
             return text
