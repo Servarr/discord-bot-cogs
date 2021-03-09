@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 
 
 class RadarrMeta(commands.Cog):
