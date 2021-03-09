@@ -40,9 +40,9 @@ class RadarrMeta(commands.Cog):
                         if dest["CoverType"] == "Poster":
                             poster = dest["Url"]
                     embed = discord.Embed(title=movie_dict["Title"], description="", colour=await ctx.embed_colour())
-                    embed.add_field(name="Overview", value=movie_dict["Overview"])
-                    embed.add_field(name="Year", value=movie_dict["Year"], inline=False)
-                    embed.add_field(name="Studio", value=movie_dict["Studio"], inline=False)
+                    embed.add_field(name="Overview", value=movie_dict["Overview"] or "-")
+                    embed.add_field(name="Year", value=movie_dict["Year"] or "-", inline=False)
+                    embed.add_field(name="Studio", value=movie_dict["Studio"] or "-", inline=False)
                     embed.set_thumbnail(url=poster)
                     await ctx.send(embed=embed)
                 else:
@@ -68,9 +68,9 @@ class RadarrMeta(commands.Cog):
                             if dest["CoverType"] == "Poster":
                                 poster = dest["Url"]
                         embed = discord.Embed(title=movie_dict[0]["Title"], description="", colour=await ctx.embed_colour())
-                        embed.add_field(name="Overview", value=movie_dict[0]["Overview"])
-                        embed.add_field(name="Year", value=movie_dict[0]["Year"], inline=False)
-                        embed.add_field(name="Studio", value=movie_dict[0]["Studio"], inline=False)
+                        embed.add_field(name="Overview", value=movie_dict[0]["Overview"] or "-")
+                        embed.add_field(name="Year", value=movie_dict[0]["Year"] or "-", inline=False)
+                        embed.add_field(name="Studio", value=movie_dict[0]["Studio"] or "-", inline=False)
                         embed.set_thumbnail(url=poster)
                         await ctx.send(embed=embed)
                     else:
