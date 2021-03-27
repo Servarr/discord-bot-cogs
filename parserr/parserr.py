@@ -27,7 +27,7 @@ class Parserr(commands.Cog):
         self._password = os.getenv("ARR_PASSWORD")
 
     @commands.group(invoke_without_command=True)
-    async def parse(self, ctx, release: str):
+    async def parse(self, ctx, *, release: str):
         """Parse release names from Arrs.
 
         If a program and branch are not specified, the server default will be used.
@@ -48,7 +48,7 @@ class Parserr(commands.Cog):
             await ctx.invoke(self._nightly_radarr_parse, release=release)
 
     @parse.group(name="radarr", invoke_without_command=True)
-    async def _radarr_parse(self, ctx: commands.Context, release: str):
+    async def _radarr_parse(self, ctx: commands.Context, *, release: str):
         """Make a Radarr parse call
 
         If a branch is not specified, the nightly branch will be used.
@@ -60,7 +60,7 @@ class Parserr(commands.Cog):
         await ctx.invoke(self._nightly_radarr_parse, release=release)
 
     @_radarr_parse.command(name="nightly")
-    async def _nightly_radarr_parse(self, ctx: commands.Context, release: str):
+    async def _nightly_radarr_parse(self, ctx: commands.Context, *, release: str):
         """Make a Radarr nightly parse call
 
         **Arguments:**
@@ -85,7 +85,7 @@ class Parserr(commands.Cog):
                 return
 
     @_radarr_parse.command(name="develop")
-    async def _develop_radarr_parse(self, ctx: commands.Context, release: str):
+    async def _develop_radarr_parse(self, ctx: commands.Context, *, release: str):
         """Make a Radarr develop branch parse call
 
         **Arguments:**
@@ -110,7 +110,7 @@ class Parserr(commands.Cog):
                 return
 
     @_radarr_parse.command(name="master")
-    async def _master_radarr_parse(self, ctx: commands.Context, release: str):
+    async def _master_radarr_parse(self, ctx: commands.Context, *, release: str):
         """Make a Radarr master branch parse call
 
         **Arguments:**
@@ -135,7 +135,7 @@ class Parserr(commands.Cog):
                 return
 
     @parse.command(name="sonarr")
-    async def _sonarr_parse(self, ctx: commands.Context, release: str):
+    async def _sonarr_parse(self, ctx: commands.Context, *, release: str):
         """Make a Sonarr parse call
 
         If a branch is not specified, the nightly branch will be used.
@@ -162,7 +162,7 @@ class Parserr(commands.Cog):
                 return
 
     @parse.command(name="lidarr")
-    async def _lidarr_parse(self, ctx: commands.Context, release: str):
+    async def _lidarr_parse(self, ctx: commands.Context, *, release: str):
         """Make a Lidarr parse call
 
         If a branch is not specified, the nightly branch will be used.
@@ -189,7 +189,7 @@ class Parserr(commands.Cog):
                 return
 
     @parse.command(name="readarr")
-    async def _readarr_parse(self, ctx: commands.Context, release: str):
+    async def _readarr_parse(self, ctx: commands.Context, *, release: str):
         """Make a Readarr parse call
 
         If a branch is not specified, the nightly branch will be used.
