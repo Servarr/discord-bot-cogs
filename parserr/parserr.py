@@ -94,7 +94,7 @@ class Parserr(commands.Cog):
         - `<release>` The release title to parse.
         """
         async with ctx.typing():
-            url = f"{self._url_fmt}/api/parse?apikey={self._apikey}&title={release}".format(arr="radarr", branch="develop")
+            url = f"{self._url_fmt}/api/parse?apikey={self._apikey}&title={release}".format(arr="radarr", branch="testing")
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
@@ -119,7 +119,7 @@ class Parserr(commands.Cog):
         - `<release>` The release title to parse.
         """
         async with ctx.typing():
-            url = f"{self._url_fmt}/api/parse?apikey={self._apikey}&title={release}".format(arr="radarr", branch="master")
+            url = f"{self._url_fmt}/api/parse?apikey={self._apikey}&title={release}".format(arr="radarr", branch="release")
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
@@ -146,7 +146,7 @@ class Parserr(commands.Cog):
         - `<release>` The release title to parse.
         """
         async with ctx.typing():
-            url = f"{self._url_fmt}/api/parse?apikey={self._apikey}&title={release}".format(arr="sonarr", branch="nightly")
+            url = f"{self._url_fmt}/api/v3/parse?apikey={self._apikey}&title={release}".format(arr="sonarr", branch="nightly")
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
