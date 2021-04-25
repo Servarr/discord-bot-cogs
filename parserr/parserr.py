@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 log = logging.getLogger("red.servarr.parserr")
 
-__version__ = "1.0.3"
+__version__ = "1.1.0"
 
 
 class Parserr(commands.Cog):
@@ -23,6 +23,7 @@ class Parserr(commands.Cog):
 
         self._headers = {'User-Agent': 'Python/3.8'}
         self._apikey = os.getenv("ARR_API_KEY")
+        self._url_fmt = os.getenv("ARR_URL_FMT", "https://dev.servarr.com/{arr}/{branch}")
         self._user = os.getenv("ARR_USER")
         self._password = os.getenv("ARR_PASSWORD")
 
@@ -68,7 +69,7 @@ class Parserr(commands.Cog):
         - `<release>` The release title to parse.
         """
         async with ctx.typing():
-            url = f"https://dev.servarr.com/radarr/nightly/api/parse?apikey={self._apikey}&title={release}"
+            url = f"{self._url_fmt}/api/parse?apikey={self._apikey}&title={release}".format(arr="radarr", branch="nightly")
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
@@ -93,7 +94,7 @@ class Parserr(commands.Cog):
         - `<release>` The release title to parse.
         """
         async with ctx.typing():
-            url = f"https://dev.servarr.com/radarr/testing/api/parse?apikey={self._apikey}&title={release}"
+            url = f"{self._url_fmt}/api/parse?apikey={self._apikey}&title={release}".format(arr="radarr", branch="testing")
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
@@ -118,7 +119,7 @@ class Parserr(commands.Cog):
         - `<release>` The release title to parse.
         """
         async with ctx.typing():
-            url = f"https://dev.servarr.com/radarr/release/api/parse?apikey={self._apikey}&title={release}"
+            url = f"{self._url_fmt}/api/parse?apikey={self._apikey}&title={release}".format(arr="radarr", branch="release")
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
@@ -145,7 +146,7 @@ class Parserr(commands.Cog):
         - `<release>` The release title to parse.
         """
         async with ctx.typing():
-            url = f"https://dev.servarr.com/sonarr/nightly/api/v3/parse?apikey={self._apikey}&title={release}"
+            url = f"{self._url_fmt}/api/v3/parse?apikey={self._apikey}&title={release}".format(arr="sonarr", branch="nightly")
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
@@ -172,7 +173,7 @@ class Parserr(commands.Cog):
         - `<release>` The release title to parse.
         """
         async with ctx.typing():
-            url = f"https://dev.servarr.com/lidarr/nightly/api/v1/parse?apikey={self._apikey}&title={release}"
+            url = f"{self._url_fmt}/api/parse?apikey={self._apikey}&title={release}".format(arr="lidarr", branch="nightly")
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
@@ -199,7 +200,7 @@ class Parserr(commands.Cog):
         - `<release>` The release title to parse.
         """
         async with ctx.typing():
-            url = f"https://dev.servarr.com/readarr/nightly/api/v1/parse?apikey={self._apikey}&title={release}"
+            url = f"{self._url_fmt}/api/parse?apikey={self._apikey}&title={release}".format(arr="readarr", branch="nightly")
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
@@ -233,7 +234,7 @@ class Parserr(commands.Cog):
             return None
 
     async def _get_arr_version(self, arr: str, api: str, branch: str):
-        url = f"https://dev.servarr.com/{arr}/{branch}/api/{api}/system/status?apikey={self._apikey}"
+        url = f"{self._url_fmt}/api/{api}/system/status?apikey={self._apikey}".format(arr=arr, branch=branch)
         text = await self._get_url_content(url)
         if text:
             parse_dict = json.loads(text)
