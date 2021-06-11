@@ -18,7 +18,7 @@ from redbot.core.utils.predicates import MessagePredicate
 
 _ = Translator("CustomCommandarr", __file__)
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 class CCError(Exception):
     pass
@@ -791,6 +791,7 @@ class CustomCommandarr(commands.Cog):
             "channel": message.channel,
             "guild": message.guild,
             "server": message.guild,
+            "lserver": message.guild.name.lower()
         }
         if result in objects:
             return str(objects[result])
