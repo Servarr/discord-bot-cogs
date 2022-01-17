@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 log = logging.getLogger("red.servarr.parserr")
 
-__version__ = "1.1.3"
+__version__ = "1.1.4"
 
 
 class Parserr(commands.Cog):
@@ -278,6 +278,8 @@ class Parserr(commands.Cog):
         embed = discord.Embed(title=f"Sonarr Parse Result", description="", colour=0x0084ff)
         embed.add_field(name="Attempted Release Title", value=f"```{response['title']  or '-'}```", inline=False)
         parsed_obj = response["parsedEpisodeInfo"]
+        series_title_obj = parsed_obj["seriesTitleInfo"]
+        all_titles_string = ", ".join((str(o) for o in series_title_obj["allTitles"])) or "-"
         language = parsed_obj["language"]["name"] or "-"
         quality = parsed_obj["quality"]["quality"]["name"] or "-"
         quality_real = "True" if parsed_obj["quality"]["revision"]["real"] > 0 else "-" or "-"
@@ -288,13 +290,15 @@ class Parserr(commands.Cog):
                          ", ".join((str(o) for o in parsed_obj["specialAbsoluteEpisodeNumbers"])) or \
                          "-"
 
-        embed.add_field(name="Series Title", value=parsed_obj["seriesTitle"] or "-", inline=False)
+        embed.add_field(name="Series Title", value=parsed_obj["seriesTitle"] or "-", inline=True)
+        embed.add_field(name="Year", value=series_title_obj["year"] or "-", inline=True)
+        embed.add_field(name="All Titles", value=all_titles_string, inline=True)
         embed.add_field(name="Season", value=parsed_obj["seasonNumber"] or "-", inline=True)
         embed.add_field(name="Episode(s)", value=episode_string, inline=True)
+        embed.add_field(name="Special", value=parsed_obj.get("special", "-"), inline=True)
         embed.add_field(name="Full Season", value=parsed_obj.get("fullSeason", "-"), inline=True)
         embed.add_field(name="Partial Season", value=parsed_obj.get("isPartialSeason", "-"), inline=True)
         embed.add_field(name="Multi Season", value=parsed_obj.get("isMultiSeason ", "-"), inline=True)
-        embed.add_field(name="Special", value=parsed_obj.get("special", "-"), inline=True)
         embed.add_field(name="Daily", value=parsed_obj.get("isDaily", "-"), inline=True)
         embed.add_field(name="AirDate", value=parsed_obj.get("airDate", "-"), inline=True)
         embed.add_field(name="Quality", value=quality, inline=False)
