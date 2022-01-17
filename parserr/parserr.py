@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 log = logging.getLogger("red.servarr.parserr")
 
-__version__ = "1.1.4"
+__version__ = "1.1.5"
 
 
 class Parserr(commands.Cog):
@@ -279,7 +279,7 @@ class Parserr(commands.Cog):
         embed.add_field(name="Attempted Release Title", value=f"```{response['title']  or '-'}```", inline=False)
         parsed_obj = response["parsedEpisodeInfo"]
         series_title_obj = parsed_obj["seriesTitleInfo"]
-        all_titles_string = ", ".join((str(o) for o in series_title_obj["allTitles"])) or "-"
+        all_titles_string = ", ".join((str(o) for o in series_title_obj["allTitles"] or [])) or "-"
         language = parsed_obj["language"]["name"] or "-"
         quality = parsed_obj["quality"]["quality"]["name"] or "-"
         quality_real = "True" if parsed_obj["quality"]["revision"]["real"] > 0 else "-" or "-"
