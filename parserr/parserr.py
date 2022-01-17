@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 log = logging.getLogger("red.servarr.parserr")
 
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 
 class Parserr(commands.Cog):
@@ -288,7 +288,7 @@ class Parserr(commands.Cog):
                          ", ".join((str(o) for o in parsed_obj["specialAbsoluteEpisodeNumbers"])) or \
                          "-"
 
-        embed.add_field(name="Series Title", value=parsed_obj.get("seriesTitle", "-"), inline=False)
+        embed.add_field(name="Series Title", value=parsed_obj["seriesTitle"] or "-", inline=False)
         embed.add_field(name="Season", value=parsed_obj["seasonNumber"] or "-", inline=True)
         embed.add_field(name="Episode(s)", value=episode_string, inline=True)
         embed.add_field(name="Full Season", value=parsed_obj.get("fullSeason", "-"), inline=True)
@@ -303,7 +303,7 @@ class Parserr(commands.Cog):
         embed.add_field(name="Repack", value=quality_repack, inline=True)
         embed.add_field(name="Language", value=language, inline=False)
         embed.add_field(name="Release Group", value=parsed_obj.get("releaseGroup", "-"), inline=True)
-        embed.add_field(name="Release Hash", value=parsed_obj.get("releaseHash", "-"), inline=True)
+        embed.add_field(name="Release Hash", value=parsed_obj["releaseHash"] or "-", inline=True)
         return embed
 
     @staticmethod
