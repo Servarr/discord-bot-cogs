@@ -178,7 +178,7 @@ class Parserr(commands.Cog):
         """
         async with ctx.typing():
             base_url = self._url_fmt.format(arr="lidarr", branch="nightly")
-            url = f"{base_url}/api/parse?apikey={self._apikey}&title={release}"
+            url = f"{base_url}/api/v1/parse?apikey={self._apikey}&title={release}"
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
@@ -206,7 +206,7 @@ class Parserr(commands.Cog):
         """
         async with ctx.typing():
             base_url = self._url_fmt.format(arr="readarr", branch="nightly")
-            url = f"{base_url}/api/parse?apikey={self._apikey}&title={release}"
+            url = f"{base_url}/api/v1/parse?apikey={self._apikey}&title={release}"
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
