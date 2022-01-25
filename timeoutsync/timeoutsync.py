@@ -13,7 +13,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.timeoutsync")
 
 
-__version__ = "1.0.10"
+__version__ = "1.0.11"
 
 
 class TimeoutSync(commands.Cog):
@@ -22,7 +22,7 @@ class TimeoutSync(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        self._token = os.getenv("TOKEN")
+        self._token = os.getenv("DISCORD_TOKEN")
         self._headers = {"Authorization": f"Bot {self._token}"}
 
     @commands.command()
