@@ -13,7 +13,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.timeoutsync")
 
 
-__version__ = "1.0.8"
+__version__ = "1.0.10"
 
 
 class TimeoutSync(commands.Cog):
