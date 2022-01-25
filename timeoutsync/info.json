@@ -1,0 +1,8 @@
+{
+    "author": ["TeamServarr"],
+    "install_msg": "Thanks for installing.",
+    "short": "Sync timeouts among guilds",
+    "description": "Sync timeouts among guilds",
+    "tags": ["api"],
+    "min_bot_version" : "3.4.0"
+}
