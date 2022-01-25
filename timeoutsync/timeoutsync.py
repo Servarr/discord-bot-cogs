@@ -3,7 +3,6 @@ import aiohttp
 import logging
 import os
 import datetime
-import json
 from urllib.parse import urlparse
 
 import discord
@@ -47,8 +46,6 @@ class TimeoutSync(commands.Cog):
 
             timeout = (datetime.datetime.utcnow() + datetime.timedelta(minutes=time_in_mins)).isoformat()
             json = {'communication_disabled_until': timeout}
-
-            ctx.send(json.dumps(self.bot))
 
             text = await self._get_url_content(url, json)
             if text:
