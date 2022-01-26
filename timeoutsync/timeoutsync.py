@@ -2,14 +2,15 @@ import asyncio
 import aiohttp
 import logging
 import os
-import datetime
+from datetime import datetime, timezone
 import discord
-from redbot.core import checks, commands
+
+from redbot.core import checks, commands, modlog
 
 log = logging.getLogger("red.servarr.timeoutsync")
 
 
-__version__ = "1.0.12"
+__version__ = "1.0.13"
 
 
 class TimeoutSync(commands.Cog):
@@ -20,11 +21,12 @@ class TimeoutSync(commands.Cog):
 
         self._token = os.getenv("DISCORD_TOKEN")
         self._headers = {"Authorization": f"Bot {self._token}"}
+        self._base = "https://discord.com/api/v9/"
 
     @commands.command()
     @commands.guild_only()
     @checks.mod_or_permissions(administrator=True)
-    async def timeout(self, ctx, member: discord.Member, time_in_mins: int):
+    async def timeout(self, ctx, member: discord.Member, time_in_mins: int, *, reason: str = None):
         """
         Timeout User
 
@@ -32,6 +34,7 @@ class TimeoutSync(commands.Cog):
 
         - `<user>` The user to timeout.
         - `<timout>` The time in minutes.
+        - `<reason>` Why was the user timed out (Optional).
         """
         author = ctx.author
         guild = ctx.guild
@@ -44,16 +47,26 @@ class TimeoutSync(commands.Cog):
             return
 
         async with ctx.typing():
-            base = "https://discord.com/api/v9/"
-
             endpoint = f'guilds/{guild.id}/members/{member.id}'
-            url = base + endpoint
+            url = self._base + endpoint
 
             timeout = (datetime.datetime.utcnow() + datetime.timedelta(minutes=time_in_mins)).isoformat()
             json = {'communication_disabled_until': timeout}
 
             text = await self._get_url_content(url, json)
             if text:
+                await modlog.create_case(
+                    self.bot,
+                    guild,
+                    ctx.message.created_at.replace(tzinfo=timezone.utc),
+                    "timeout",
+                    member,
+                    author,
+                    reason,
+                    until=timeout,
+                    channel=None,
+                )
+
                 await ctx.send(f'Done, user {member.name} has been put to sleep for {time_in_mins} minutes')
             else:
                 await ctx.send(f'Unable to timout user {member.name}')
