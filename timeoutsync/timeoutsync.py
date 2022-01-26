@@ -96,10 +96,10 @@ class TimeoutSync(commands.Cog):
             sync_list.append(id)
             message = "Added `{0}` to the sync list".format(guild.name)
         await self.sync_list.unlock(key, sync_list)
-        if not in_list:
-            await self.enact_bans(guild)
-            if not dont_collect:
-                await self.collect_guild_bans(guild)
+        # if not in_list:
+        #     await self.enact_bans(guild)
+        #     if not dont_collect:
+        #         await self.collect_guild_bans(guild)
         await ctx.send(message)
 
     @timeout.command(name="synclist", help="Print list of server set to be synced")
