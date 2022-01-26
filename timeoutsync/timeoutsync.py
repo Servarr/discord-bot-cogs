@@ -26,7 +26,7 @@ class TimeoutSync(commands.Cog):
         self.config.register_global(sync_list=[], ban_queue=[])
         self.sync_list = ConfigLock(self.config.sync_list)
 
-    @commands.command()
+    @commands.group(invoke_without_command=True)
     @commands.guild_only()
     @checks.mod_or_permissions(administrator=True)
     async def timeout(self, ctx, member: discord.Member, time_in_mins: int, *, reason: str = None):
