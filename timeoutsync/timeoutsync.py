@@ -5,12 +5,12 @@ import os
 from datetime import datetime, timezone, timedelta
 import discord
 
-from redbot.core import checks, commands, modlog
+from redbot.core import checks, commands, modlog, Config
 
 log = logging.getLogger("red.servarr.timeoutsync")
 
 
-__version__ = "1.0.15"
+__version__ = "1.0.16"
 
 
 class TimeoutSync(commands.Cog):
@@ -22,6 +22,9 @@ class TimeoutSync(commands.Cog):
         self._token = os.getenv("DISCORD_TOKEN")
         self._headers = {"Authorization": f"Bot {self._token}"}
         self._base = "https://discord.com/api/v9/"
+        self.config = Config.get_conf(self, 23481236)
+        self.config.register_global(sync_list=[], ban_queue=[])
+        self.sync_list = ConfigLock(self.config.sync_list)
 
     @commands.command()
     @commands.guild_only()
@@ -71,6 +74,44 @@ class TimeoutSync(commands.Cog):
             else:
                 await ctx.send(f'Unable to timout user {member.name}')
 
+    @timeout.command(name="synctoggle", help="Toggle whether or not a server is synced given its ID")
+    @checks.admin()
+    @checks.bot_in_a_guild()
+    async def syncserver(self, ctx, guild_id: int = None, *, dont_collect: bool = False):
+        if guild_id is not None:
+            guild = self.bot.get_guild(guild_id)
+        else:
+            guild = ctx.guild
+        if guild is not None:
+            id = guild.id
+        else:
+            return await ctx.send("Unknown id {0}".format(guild_id))
+
+        key, sync_list = await self.sync_list.lock()
+        in_list = id in sync_list
+        if in_list:
+            sync_list.remove(id)
+            message = "Removed `{0}` from the sync list".format(guild.name)
+        else:
+            sync_list.append(id)
+            message = "Added `{0}` to the sync list".format(guild.name)
+        await self.sync_list.unlock(key, sync_list)
+        if not in_list:
+            await self.enact_bans(guild)
+            if not dont_collect:
+                await self.collect_guild_bans(guild)
+        await ctx.send(message)
+
+    @timeout.command(name="synclist", help="Print list of server set to be synced")
+    @checks.admin()
+    async def synclist(self, ctx):
+        sync_list = await self.config.sync_list()
+        message = "Synced servers: "
+        for id in sync_list:
+            guild = self.bot.get_guild(id)
+            message += "**{0}** [{1}], ".format(guild.name, id)
+        await ctx.send(message[:-2])
+
     async def _get_url_content(self, url: str, json: str):
         try:
             timeout = aiohttp.ClientTimeout(total=20)
@@ -90,3 +131,32 @@ class TimeoutSync(commands.Cog):
         except Exception:
             log.error(f"General failure accessing site at url:\n\t{url}", exc_info=True)
             return None
+
+class AsyncLock:
+    def __init__(self):
+        self.lock_i = 0
+        self.lock_active = None
+    async def lock(self):
+        i = self.lock_i + 1
+        self.lock_i = i
+        while self.lock_active is not None:
+            await asyncio.sleep(0.1)
+        self.lock_active = i
+        value = await self._get()
+        return (i, value)
+    async def unlock(self, key, value=None):
+        if key == self.lock_active:
+            if value is not None:
+                await self._set(value)
+            self.lock_active = None
+        else:
+            raise RuntimeError('{0} is not active lock key'.format(key))
+
+class ConfigLock(AsyncLock):
+    def __init__(self, configItem):
+        super().__init__()
+        self._item = configItem
+    async def _get(self):
+        return await self._item()
+    async def _set(self,value):
+        return await self._item.set(value)
