@@ -2,7 +2,7 @@ import asyncio
 import aiohttp
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import discord
 
 from redbot.core import checks, commands, modlog
@@ -10,7 +10,7 @@ from redbot.core import checks, commands, modlog
 log = logging.getLogger("red.servarr.timeoutsync")
 
 
-__version__ = "1.0.13"
+__version__ = "1.0.14"
 
 
 class TimeoutSync(commands.Cog):
@@ -50,7 +50,7 @@ class TimeoutSync(commands.Cog):
             endpoint = f'guilds/{guild.id}/members/{member.id}'
             url = self._base + endpoint
 
-            timeout = (datetime.datetime.utcnow() + datetime.timedelta(minutes=time_in_mins)).isoformat()
+            timeout = (datetime.utcnow() + timedelta(minutes=time_in_mins)).isoformat()
             json = {'communication_disabled_until': timeout}
 
             text = await self._get_url_content(url, json)
