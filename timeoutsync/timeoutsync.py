@@ -2,6 +2,7 @@ import asyncio
 import aiohttp
 import logging
 import os
+import json
 from datetime import datetime, timezone, timedelta
 import discord
 
@@ -9,8 +10,15 @@ from redbot.core import checks, commands, modlog, Config
 
 log = logging.getLogger("red.servarr.timeoutsync")
 
+# red 3.0 backwards compatibility support
+listener = getattr(commands.Cog, "listener", None)
 
-__version__ = "1.0.16"
+if listener is None:  # thanks Sinbad
+    def listener(name=None):
+        return lambda x: x
+
+
+__version__ = "1.0.17"
 
 
 class TimeoutSync(commands.Cog):
@@ -25,6 +33,41 @@ class TimeoutSync(commands.Cog):
         self.config = Config.get_conf(self, 23481236)
         self.config.register_global(sync_list=[], ban_queue=[])
         self.sync_list = ConfigLock(self.config.sync_list)
+
+    async def in_sync_list(self, guild):
+        sync_list = await self.config.sync_list()
+        return guild.id in sync_list
+
+    @listener()
+    async def on_member_update(self, before, after):
+        guild = before.guild
+        if not await self.in_sync_list(guild):
+            return
+
+        endpoint = f'guilds/{guild.id}/members/{after.id}'
+        url = self._base + endpoint
+
+        text = await self._get_member(url)
+
+        member_dict = json.loads(text)
+        timeout = member_dict["communication_disabled_until"] or None
+
+        if timeout:
+            await self.sync_timeout(after, timeout)
+
+    async def sync_timeout(self, member: discord.Member, timeout):
+        sync_list = await self.config.sync_list()
+        successful_timeouts = 0
+        json_body = {'communication_disabled_until': timeout}
+
+        for id in sync_list:
+            endpoint = f'guilds/{id}/members/{member.id}'
+            url = self._base + endpoint
+
+            text = await self._update_member(url, json_body)
+            if text:
+                successful_timeouts = successful_timeouts + 1
+        return successful_timeouts
 
     @commands.group(invoke_without_command=True)
     @commands.guild_only()
@@ -52,13 +95,13 @@ class TimeoutSync(commands.Cog):
         sync_list = await self.config.sync_list()
         successful_timeouts = 0
         timeout = (datetime.utcnow() + timedelta(minutes=time_in_mins)).isoformat()
-        json = {'communication_disabled_until': timeout}
+        json_body = {'communication_disabled_until': timeout}
 
         for id in sync_list:
             endpoint = f'guilds/{id}/members/{member.id}'
             url = self._base + endpoint
 
-            text = await self._get_url_content(url, json)
+            text = await self._update_member(url, json_body)
             if text:
                 await modlog.create_case(
                     self.bot,
@@ -116,11 +159,31 @@ class TimeoutSync(commands.Cog):
             message += "**{0}** [{1}], ".format(guild.name, id)
         await ctx.send(message[:-2])
 
-    async def _get_url_content(self, url: str, json: str):
+    async def _get_member(self, url: str):
         try:
             timeout = aiohttp.ClientTimeout(total=20)
             async with aiohttp.ClientSession(headers=self._headers, timeout=timeout) as session:
-                async with session.patch(url, json=json) as resp:
+                async with session.get(url) as resp:
+                    if resp.status in range(200, 300):
+                        return await resp.text()
+                    else:
+                        log.error(f"aiohttp unexpected response from url:\n\t{url}", exc_info=True)
+                        return None
+        except aiohttp.client_exceptions.ClientConnectorError:
+            log.error(f"aiohttp failure accessing site at url:\n\t{url}", exc_info=True)
+            return None
+        except asyncio.exceptions.TimeoutError:
+            log.error(f"asyncio timeout while accessing feed at url:\n\t{url}")
+            return None
+        except Exception:
+            log.error(f"General failure accessing site at url:\n\t{url}", exc_info=True)
+            return None
+
+    async def _update_member(self, url: str, json_body: str):
+        try:
+            timeout = aiohttp.ClientTimeout(total=20)
+            async with aiohttp.ClientSession(headers=self._headers, timeout=timeout) as session:
+                async with session.patch(url, json=json_body) as resp:
                     if resp.status in range(200, 300):
                         return await resp.text()
                     else:
