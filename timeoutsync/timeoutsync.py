@@ -3,7 +3,7 @@ import aiohttp
 import logging
 import os
 import datetime
-
+import discord
 from redbot.core import checks, commands
 
 log = logging.getLogger("red.servarr.timeoutsync")
@@ -24,7 +24,7 @@ class TimeoutSync(commands.Cog):
     @commands.command()
     @commands.guild_only()
     @checks.mod_or_permissions(administrator=True)
-    async def timeout(self, ctx, user_id: str, time_in_mins: int):
+    async def timeout(self, ctx, member: discord.Member, time_in_mins: int):
         """
         Timeout User
 
@@ -33,11 +33,20 @@ class TimeoutSync(commands.Cog):
         - `<user>` The user to timeout.
         - `<timout>` The time in minutes.
         """
+        author = ctx.author
+        guild = ctx.guild
+
+        if author == member:
+            await ctx.send("I cannot let you do that. Self-harm is bad")
+            return
+        elif ctx.guild.me.top_role <= member.top_role or member == ctx.guild.owner:
+            await ctx.send("I cannot do that due to Discord hierarchy rules.")
+            return
 
         async with ctx.typing():
             base = "https://discord.com/api/v9/"
 
-            endpoint = f'guilds/{ctx.guild.id}/members/{user_id}'
+            endpoint = f'guilds/{guild.id}/members/{member.id}'
             url = base + endpoint
 
             timeout = (datetime.datetime.utcnow() + datetime.timedelta(minutes=time_in_mins)).isoformat()
@@ -45,9 +54,9 @@ class TimeoutSync(commands.Cog):
 
             text = await self._get_url_content(url, json)
             if text:
-                await ctx.send(f'Done, user {user_id} has been put to sleep for {time_in_mins} minutes')
+                await ctx.send(f'Done, user {member.name} has been put to sleep for {time_in_mins} minutes')
             else:
-                await ctx.send(f'Unable to timout user {user_id}')
+                await ctx.send(f'Unable to timout user {member.name}')
 
     async def _get_url_content(self, url: str, json: str):
         try:
