@@ -49,12 +49,14 @@ class TimeoutSync(commands.Cog):
             await ctx.send("I cannot do that due to Discord hierarchy rules.")
             return
 
-        async with ctx.typing():
-            endpoint = f'guilds/{guild.id}/members/{member.id}'
-            url = self._base + endpoint
+        sync_list = await self.config.sync_list()
+        successful_timeouts = 0
+        timeout = (datetime.utcnow() + timedelta(minutes=time_in_mins)).isoformat()
+        json = {'communication_disabled_until': timeout}
 
-            timeout = (datetime.utcnow() + timedelta(minutes=time_in_mins)).isoformat()
-            json = {'communication_disabled_until': timeout}
+        for id in sync_list:
+            endpoint = f'guilds/{id}/members/{member.id}'
+            url = self._base + endpoint
 
             text = await self._get_url_content(url, json)
             if text:
@@ -70,9 +72,11 @@ class TimeoutSync(commands.Cog):
                     channel=None,
                 )
 
-                await ctx.send(f'Done, user {member.name} has been put to sleep for {time_in_mins} minutes')
-            else:
-                await ctx.send(f'Unable to timout user {member.name}')
+                successful_timeouts = successful_timeouts + 1
+        if successful_timeouts > 0:
+            await ctx.send(f'Done, user {member.name} has been put to sleep for {time_in_mins} minutes in {successful_timeouts} servers')
+        else:
+            await ctx.send(f'Unable to timout user {member.name}')
 
     @timeout.command(name="synctoggle", help="Toggle whether or not a server is synced given its ID")
     @checks.admin()
