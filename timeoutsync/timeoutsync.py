@@ -10,15 +10,14 @@ from redbot.core import checks, commands, modlog
 log = logging.getLogger("red.servarr.timeoutsync")
 
 
-__version__ = "1.0.14"
+__version__ = "1.0.15"
 
 
 class TimeoutSync(commands.Cog):
     """Grab stuff from a text API."""
 
-    def __init__(self, **kwargs):
-        self.bot = kwargs.get("bot")
-        self.config = kwargs.get("config")
+    def __init__(self, bot):
+        self.bot = bot
 
         self._token = os.getenv("DISCORD_TOKEN")
         self._headers = {"Authorization": f"Bot {self._token}"}
@@ -39,8 +38,6 @@ class TimeoutSync(commands.Cog):
         """
         author = ctx.author
         guild = ctx.guild
-
-        all_guilds = await self.config.all_guilds()
 
         if author == member:
             await ctx.send("I cannot let you do that. Self-harm is bad")
