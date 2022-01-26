@@ -3,17 +3,13 @@ import aiohttp
 import logging
 import os
 import datetime
-from urllib.parse import urlparse
 
-import discord
 from redbot.core import checks, commands
-from redbot.core.utils.chat_formatting import box, pagify
-from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 log = logging.getLogger("red.servarr.timeoutsync")
 
 
-__version__ = "1.0.11"
+__version__ = "1.0.12"
 
 
 class TimeoutSync(commands.Cog):
@@ -49,17 +45,20 @@ class TimeoutSync(commands.Cog):
 
             text = await self._get_url_content(url, json)
             if text:
-                await ctx.send(text)
+                await ctx.send(f'Done, user {user_id} has been put to sleep for {time_in_mins} minutes')
             else:
-                await ctx.send(text)
+                await ctx.send(f'Unable to timout user {user_id}')
 
     async def _get_url_content(self, url: str, json: str):
         try:
             timeout = aiohttp.ClientTimeout(total=20)
             async with aiohttp.ClientSession(headers=self._headers, timeout=timeout) as session:
                 async with session.patch(url, json=json) as resp:
-                    text = await resp.text()
-            return text
+                    if resp.status in range(200, 300):
+                        return await resp.text()
+                    else:
+                        log.error(f"aiohttp unexpected response from url:\n\t{url}", exc_info=True)
+                        return None
         except aiohttp.client_exceptions.ClientConnectorError:
             log.error(f"aiohttp failure accessing site at url:\n\t{url}", exc_info=True)
             return None
