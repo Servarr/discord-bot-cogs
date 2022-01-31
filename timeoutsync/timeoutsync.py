@@ -18,7 +18,7 @@ if listener is None:  # thanks Sinbad
         return lambda x: x
 
 
-__version__ = "1.0.17"
+__version__ = "1.0.18"
 
 
 class TimeoutSync(commands.Cog):
@@ -49,11 +49,12 @@ class TimeoutSync(commands.Cog):
 
         text = await self._get_member(url)
 
-        member_dict = json.loads(text)
-        timeout = member_dict["communication_disabled_until"] or None
+        if text:
+            member_dict = json.loads(text)
+            timeout = member_dict["communication_disabled_until"] or None
 
-        if timeout:
-            await self.sync_timeout(after, timeout)
+            if timeout:
+                await self.sync_timeout(after, timeout)
 
     async def sync_timeout(self, member: discord.Member, timeout):
         sync_list = await self.config.sync_list()
