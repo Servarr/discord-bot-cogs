@@ -18,7 +18,7 @@ if listener is None:  # thanks Sinbad
         return lambda x: x
 
 
-__version__ = "1.0.19"
+__version__ = "1.0.20"
 
 
 class TimeoutSync(commands.Cog):
@@ -108,7 +108,7 @@ class TimeoutSync(commands.Cog):
                     self.bot,
                     guild,
                     ctx.message.created_at.replace(tzinfo=timezone.utc),
-                    "mute",
+                    "warning",
                     member,
                     author,
                     reason,
