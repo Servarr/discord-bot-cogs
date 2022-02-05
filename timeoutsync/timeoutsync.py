@@ -18,7 +18,7 @@ if listener is None:  # thanks Sinbad
         return lambda x: x
 
 
-__version__ = "1.0.20"
+__version__ = "1.0.21"
 
 
 class TimeoutSync(commands.Cog):
@@ -104,9 +104,10 @@ class TimeoutSync(commands.Cog):
 
             text = await self._update_member(url, json_body)
             if text:
+                successful_timeouts = successful_timeouts + 1
                 await modlog.create_case(
                     self.bot,
-                    guild,
+                    self.bot.get_guild(id),
                     ctx.message.created_at.replace(tzinfo=timezone.utc),
                     "warning",
                     member,
@@ -115,8 +116,6 @@ class TimeoutSync(commands.Cog):
                     until=None,
                     channel=None,
                 )
-
-                successful_timeouts = successful_timeouts + 1
         if successful_timeouts > 0:
             await ctx.send(f'Done, user {member.name} has been put to sleep for {time_in_mins} minutes in {successful_timeouts} servers')
         else:
