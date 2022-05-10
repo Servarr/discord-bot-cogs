@@ -3,7 +3,7 @@ import aiohttp
 import logging
 import os
 import json
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote
 
 import discord
 from redbot.core import checks, commands
@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 log = logging.getLogger("red.servarr.parserr")
 
-__version__ = "1.1.6"
+__version__ = "1.1.7"
 
 
 class Parserr(commands.Cog):
@@ -70,7 +70,7 @@ class Parserr(commands.Cog):
         """
         async with ctx.typing():
             base_url = self._url_fmt.format(arr="radarr", branch="nightly")
-            url = f"{base_url}/api/v3/parse?apikey={self._apikey}&title={release}"
+            url = f"{base_url}/api/v3/parse?apikey={self._apikey}&title={quote(release)}"
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
@@ -96,7 +96,7 @@ class Parserr(commands.Cog):
         """
         async with ctx.typing():
             base_url = self._url_fmt.format(arr="radarr", branch="testing")
-            url = f"{base_url}/api/v3/parse?apikey={self._apikey}&title={release}"
+            url = f"{base_url}/api/v3/parse?apikey={self._apikey}&title={quote(release)}"
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
@@ -122,7 +122,7 @@ class Parserr(commands.Cog):
         """
         async with ctx.typing():
             base_url = self._url_fmt.format(arr="radarr", branch="release")
-            url = f"{base_url}/api/v3/parse?apikey={self._apikey}&title={release}"
+            url = f"{base_url}/api/v3/parse?apikey={self._apikey}&title={quote(release)}"
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
@@ -150,7 +150,7 @@ class Parserr(commands.Cog):
         """
         async with ctx.typing():
             base_url = self._url_fmt.format(arr="sonarr", branch="nightly")
-            url = f"{base_url}/api/v3/parse?apikey={self._apikey}&title={release}"
+            url = f"{base_url}/api/v3/parse?apikey={self._apikey}&title={quote(release)}"
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
@@ -178,7 +178,7 @@ class Parserr(commands.Cog):
         """
         async with ctx.typing():
             base_url = self._url_fmt.format(arr="lidarr", branch="nightly")
-            url = f"{base_url}/api/v1/parse?apikey={self._apikey}&title={release}"
+            url = f"{base_url}/api/v1/parse?apikey={self._apikey}&title={quote(release)}"
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
@@ -206,7 +206,7 @@ class Parserr(commands.Cog):
         """
         async with ctx.typing():
             base_url = self._url_fmt.format(arr="readarr", branch="nightly")
-            url = f"{base_url}/api/v1/parse?apikey={self._apikey}&title={release}"
+            url = f"{base_url}/api/v1/parse?apikey={self._apikey}&title={quote(release)}"
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
