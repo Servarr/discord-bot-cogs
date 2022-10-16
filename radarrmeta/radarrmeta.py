@@ -13,7 +13,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.28"
+__version__ = "1.1.29"
 
 
 class RadarrMeta(commands.Cog):
@@ -279,7 +279,10 @@ class RadarrMeta(commands.Cog):
             for dest in album["images"]:
                 if dest["CoverType"] == "Cover":
                     poster = dest["Url"]
-                elif dest["CoverType"] == "Fanart":
+
+        if "images" in album["artists"][0]:
+            for dest in album["artists"][0]["images"]:
+                if dest["CoverType"] == "Banner":
                     fanart = dest["Url"]
 
         ratingString = "-"
