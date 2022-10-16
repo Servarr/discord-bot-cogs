@@ -13,7 +13,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.18"
+__version__ = "1.1.19"
 
 
 class RadarrMeta(commands.Cog):
@@ -136,11 +136,13 @@ class RadarrMeta(commands.Cog):
         poster = ""
         fanart = ""
         certification = ""
-        for dest in movie["Images"]:
-            if dest["CoverType"] == "Poster":
-                poster = dest["Url"]
-            elif dest["CoverType"] == "Fanart":
-                fanart = dest["Url"]
+
+        if movie["Images"]:
+            for dest in movie["Images"]:
+                if dest["CoverType"] == "Poster":
+                    poster = dest["Url"]
+                elif dest["CoverType"] == "Fanart":
+                    fanart = dest["Url"]
 
         for dest in movie["Certifications"]:
             if dest["Country"] == "US":
@@ -167,12 +169,13 @@ class RadarrMeta(commands.Cog):
     def _get_tv_embed(show):
         poster = ""
         fanart = ""
-        certification = ""
-        for dest in show["images"]:
-            if dest["coverType"] == "Poster":
-                poster = dest["url"]
-            elif dest["coverType"] == "Fanart":
-                fanart = dest["url"]
+
+        if show["images"]:
+            for dest in show["images"]:
+                if dest["coverType"] == "Poster":
+                    poster = dest["url"]
+                elif dest["coverType"] == "Fanart":
+                    fanart = dest["url"]
 
         ratingString = ""
         if show["rating"]["value"] != 0:
