@@ -13,7 +13,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.25"
+__version__ = "1.1.26"
 
 
 class RadarrMeta(commands.Cog):
@@ -179,12 +179,12 @@ class RadarrMeta(commands.Cog):
         else:
             ratingString = f"{movie['MovieRatings']['Tmdb']['Value']} ({movie['MovieRatings']['Tmdb']['Count']} Votes)"
 
-        embed = discord.Embed(title=f"{movie['Title']} [{movie['OriginalLanguage']}]", description=movie["Overview"] or "-", colour=0xb3a447)
+        embed = discord.Embed(title=f"{movie['Title']} [{movie['OriginalLanguage']}]", description=movie["Overview"][0:250] or "-", colour=0xb3a447)
         embed.add_field(name="Year", value=movie["Year"] or "-", inline=True)
         embed.add_field(name="Certification", value=certification or "-", inline=True)
         embed.add_field(name="Rating", value=ratingString or "-", inline=True)
         embed.add_field(name="Runtime", value=movie["Runtime"] or "-", inline=True)
-        embed.add_field(name="Genre", value=', '.join(movie["Genres"] or []), inline=True)
+        embed.add_field(name="Genre", value=', '.join(movie["Genres"][0:3] or []), inline=True)
         embed.add_field(name="Studio", value=movie["Studio"] or "-", inline=True)
         embed.set_thumbnail(url=poster)
         embed.set_image(url=fanart)
@@ -207,12 +207,12 @@ class RadarrMeta(commands.Cog):
             if show["rating"]["value"] != 0:
                 ratingString = f"{show['rating']['value']} ({show['rating']['count']} Votes)"
 
-        embed = discord.Embed(title=f"{show['title']} [{show['originalLanguage']}]", description=show.get("overview", "-"), colour=0x0084ff)
+        embed = discord.Embed(title=f"{show['title']} [{show['originalLanguage']}]", description=show.get("overview", "-")[0:250], colour=0x0084ff)
         embed.add_field(name="First Air", value=show["firstAired"] or "-", inline=True)
         embed.add_field(name="Certification", value=show.get("contentRating", "-"), inline=True)
         embed.add_field(name="Rating", value=ratingString or "-", inline=True)
         embed.add_field(name="Runtime", value=show["runtime"] or "-", inline=True)
-        embed.add_field(name="Genre", value=', '.join(show["genres"] or []), inline=True)
+        embed.add_field(name="Genre", value=', '.join(show["genres"][0:3] or []), inline=True)
         embed.add_field(name="Network", value=show.get("network", "-"), inline=True)
         embed.set_thumbnail(url=poster)
         embed.set_image(url=fanart)
@@ -235,11 +235,11 @@ class RadarrMeta(commands.Cog):
             if artist["rating"]["Value"] != 0:
                 ratingString = f"{artist['rating']['Value']} ({artist['rating']['Count']} Votes)"
 
-        embed = discord.Embed(title=f"{artist['artistname']}", description=artist.get("overview", "-"), colour=0x40a333)
+        embed = discord.Embed(title=f"{artist['artistname']}", description=artist.get("overview", "-")[0:250], colour=0x40a333)
         embed.add_field(name="Disambiguation", value=artist["disambiguation"] or "-", inline=True)
         embed.add_field(name="Rating", value=ratingString or "-", inline=True)
         embed.add_field(name="Status", value=artist["status"] or "-", inline=True)
-        embed.add_field(name="Genre", value=', '.join(artist["genres"] or []), inline=True)
+        embed.add_field(name="Genre", value=', '.join(artist["genres"][0:3] or []), inline=True)
         embed.add_field(name="Type", value=artist.get("type", "-"), inline=True)
         embed.set_thumbnail(url=poster)
         embed.set_image(url=fanart)
