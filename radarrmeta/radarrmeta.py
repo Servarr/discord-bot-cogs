@@ -5,6 +5,7 @@ import json
 from urllib.parse import urlparse
 
 import discord
+from discord_components import DiscordComponents, Button, ButtonStyle, InteractionType
 from redbot.core import checks, commands
 from redbot.core.utils.chat_formatting import box, pagify
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
@@ -12,7 +13,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.12"
+__version__ = "1.1.13"
 
 
 class RadarrMeta(commands.Cog):
@@ -40,7 +41,7 @@ class RadarrMeta(commands.Cog):
                 if text:
                     movie_dict = json.loads(text)
                     if len(movie_dict) > 0:
-                        await ctx.send(embed=self._get_movie_embed(movie_dict[0]), components=[discord.Button(style=discord.ButtonStyle.URL, label="Tmdb", url="https://themoviedb.org"), discord.Button(style=discord.ButtonStyle.blue, label="Imdb", url="https://imdb.com")])
+                        await ctx.send(embed=self._get_movie_embed(movie_dict[0]), components=[Button(style=ButtonStyle.URL, label="Tmdb", url="https://themoviedb.org"), Button(style=ButtonStyle.blue, label="Imdb", url="https://imdb.com")])
                     else:
                         await ctx.send("Movie not found.")
                 else:
