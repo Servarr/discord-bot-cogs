@@ -13,7 +13,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.27"
+__version__ = "1.1.28"
 
 
 class RadarrMeta(commands.Cog):
@@ -282,7 +282,7 @@ class RadarrMeta(commands.Cog):
                 elif dest["CoverType"] == "Fanart":
                     fanart = dest["Url"]
 
-        ratingString = ""
+        ratingString = "-"
         if "rating" in album:
             if album["rating"]["Value"] != 0:
                 ratingString = f"{album['rating']['Value']} ({album['rating']['Count']} Votes)"
@@ -291,9 +291,9 @@ class RadarrMeta(commands.Cog):
         embed.add_field(name="Release Date", value=album["releasedate"] or "-", inline=True)
         embed.add_field(name="Artist", value=album["artists"][0]["artistname"] or "-", inline=True)
         embed.add_field(name="Rating", value=ratingString or "-", inline=True)
-        embed.add_field(name="Genre", value=', '.join(album["genres"][0:3] or []), inline=True)
+        embed.add_field(name="Genre", value=', '.join(album["genres"][0:3] or []) or "-", inline=True)
         embed.add_field(name="Type", value=album.get("type", "-"), inline=True)
-        embed.add_field(name="Sec Types", value=', '.join(album["secondarytypes"][0:3] or []), inline=True)
+        embed.add_field(name="Sec Types", value=', '.join(album["secondarytypes"][0:3] or []) or "-", inline=True)
         embed.set_thumbnail(url=poster)
         embed.set_image(url=fanart)
         return embed
