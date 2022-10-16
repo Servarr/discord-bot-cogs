@@ -13,7 +13,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.26"
+__version__ = "1.1.27"
 
 
 class RadarrMeta(commands.Cog):
@@ -75,13 +75,13 @@ class RadarrMeta(commands.Cog):
                 return
 
     @commands.group(invoke_without_command=True)
-    async def music(self, ctx, *, artist: str):
+    async def artist(self, ctx, *, artist: str):
         """
-        Base command for music lookup.
+        Base command for artist lookup.
 
         **Arguments:**
 
-        - `<artist>` The title to lookup.
+        - `<artist>` The name to lookup.
         """
         async with ctx.typing():
             url = "https://api.lidarr.audio/api/v0.4/search?type=artist&query=" + artist
@@ -93,9 +93,34 @@ class RadarrMeta(commands.Cog):
                     if len(show_dict) > 0:
                         await ctx.send(embed=self._get_artist_embed(show_dict[0]))
                     else:
-                        await ctx.send("Music not found.")
+                        await ctx.send("Artist not found.")
                 else:
-                    await ctx.send("Music not found")
+                    await ctx.send("Artist not found")
+            else:
+                return
+
+    @commands.group(invoke_without_command=True)
+    async def album(self, ctx, *, artist: str):
+        """
+        Base command for album lookup.
+
+        **Arguments:**
+
+        - `<album>` The title to lookup.
+        """
+        async with ctx.typing():
+            url = "https://api.lidarr.audio/api/v0.4/search?type=album&query=" + artist
+            valid_url = await self._valid_url(ctx, url)
+            if valid_url:
+                text = await self._get_url_content(url)
+                if text:
+                    show_dict = json.loads(text)
+                    if len(show_dict) > 0:
+                        await ctx.send(embed=self._get_album_embed(show_dict[0]))
+                    else:
+                        await ctx.send("Album not found.")
+                else:
+                    await ctx.send("Album not found")
             else:
                 return
 
@@ -241,6 +266,34 @@ class RadarrMeta(commands.Cog):
         embed.add_field(name="Status", value=artist["status"] or "-", inline=True)
         embed.add_field(name="Genre", value=', '.join(artist["genres"][0:3] or []), inline=True)
         embed.add_field(name="Type", value=artist.get("type", "-"), inline=True)
+        embed.set_thumbnail(url=poster)
+        embed.set_image(url=fanart)
+        return embed
+
+    @staticmethod
+    def _get_album_embed(album):
+        poster = ""
+        fanart = ""
+
+        if "images" in album:
+            for dest in album["images"]:
+                if dest["CoverType"] == "Cover":
+                    poster = dest["Url"]
+                elif dest["CoverType"] == "Fanart":
+                    fanart = dest["Url"]
+
+        ratingString = ""
+        if "rating" in album:
+            if album["rating"]["Value"] != 0:
+                ratingString = f"{album['rating']['Value']} ({album['rating']['Count']} Votes)"
+
+        embed = discord.Embed(title=f"{album['title']}", description=album.get("overview", "-")[0:250], colour=0x40a333)
+        embed.add_field(name="Release Date", value=album["releasedate"] or "-", inline=True)
+        embed.add_field(name="Artist", value=album["artists"][0]["artistname"] or "-", inline=True)
+        embed.add_field(name="Rating", value=ratingString or "-", inline=True)
+        embed.add_field(name="Genre", value=', '.join(album["genres"][0:3] or []), inline=True)
+        embed.add_field(name="Type", value=album.get("type", "-"), inline=True)
+        embed.add_field(name="Sec Types", value=', '.join(album["secondarytypes"][0:3] or []), inline=True)
         embed.set_thumbnail(url=poster)
         embed.set_image(url=fanart)
         return embed
