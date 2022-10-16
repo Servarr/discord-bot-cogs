@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.4"
+__version__ = "1.1.5"
 
 
 class RadarrMeta(commands.Cog):
@@ -39,17 +39,10 @@ class RadarrMeta(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     movie_dict = json.loads(text)
-                    movie = movie_dict[0]
-                    poster = ""
-                    for dest in movie["Images"]:
-                        if dest["CoverType"] == "Poster":
-                            poster = dest["Url"]
-                    embed = discord.Embed(title=movie["Title"], description="", colour=await ctx.embed_colour())
-                    embed.add_field(name="Overview", value=movie["Overview"] or "-")
-                    embed.add_field(name="Year", value=movie["Year"] or "-", inline=False)
-                    embed.add_field(name="Studio", value=movie["Studio"] or "-", inline=False)
-                    embed.set_thumbnail(url=poster)
-                    await ctx.send(embed=embed)
+                    if len(movie_dict) > 0:
+                        await ctx.send(embed=_get_movie_embed(movie_dict[0]))
+                    else:
+                        await ctx.send("Movie not found.")
                 else:
                     await ctx.send("Movie not found")
             else:
@@ -67,16 +60,7 @@ class RadarrMeta(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     movie_dict = json.loads(text)
-                    poster = ""
-                    for dest in movie_dict["Images"]:
-                        if dest["CoverType"] == "Poster":
-                            poster = dest["Url"]
-                    embed = discord.Embed(title=movie_dict["Title"], description="", colour=await ctx.embed_colour())
-                    embed.add_field(name="Overview", value=movie_dict["Overview"] or "-")
-                    embed.add_field(name="Year", value=movie_dict["Year"] or "-", inline=False)
-                    embed.add_field(name="Studio", value=movie_dict["Studio"] or "-", inline=False)
-                    embed.set_thumbnail(url=poster)
-                    await ctx.send(embed=embed)
+                    await ctx.send(embed=_get_movie_embed(movie_dict))
                 else:
                     await ctx.send("TmdbId not found")
             else:
@@ -95,22 +79,38 @@ class RadarrMeta(commands.Cog):
                 if text:
                     movie_dict = json.loads(text)
                     if len(movie_dict) > 0:
-                        poster = ""
-                        for dest in movie_dict[0]["Images"]:
-                            if dest["CoverType"] == "Poster":
-                                poster = dest["Url"]
-                        embed = discord.Embed(title=movie_dict[0]["Title"], description="", colour=await ctx.embed_colour())
-                        embed.add_field(name="Overview", value=movie_dict[0]["Overview"] or "-")
-                        embed.add_field(name="Year", value=movie_dict[0]["Year"] or "-", inline=False)
-                        embed.add_field(name="Studio", value=movie_dict[0]["Studio"] or "-", inline=False)
-                        embed.set_thumbnail(url=poster)
-                        await ctx.send(embed=embed)
+                        await ctx.send(embed=_get_movie_embed(movie_dict[0]))
                     else:
                         await ctx.send("ImdbId doesn't exist or isn't on TMDb")
                 else:
                     await ctx.send("ImdbId doesn't exist or isn't on TMDb")
             else:
                 return
+
+    async def _get_movie_embed(self, movie: dict):
+        poster = ""
+        fanart = ""
+        certification = ""
+        for dest in movie["Images"]:
+            if dest["CoverType"] == "Poster":
+                poster = dest["Url"]
+            if dest["CoverType"] == "Fanart":
+                fanart = dest["Url"]
+
+        for dest in movie["Certifications"]:
+            if dest["Country"] == "US":
+                certification = dest["Certification"]
+
+        embed = discord.Embed(title=movie["Title"], description=movie["Overview"] or "-", colour=await ctx.embed_colour())
+        embed.add_field(name="Year", value=movie["Year"] or "-", inline=False)
+        embed.add_field(name="Certification", value=certification or "-", inline=False)
+        embed.add_field(name="Rating", value=movie["MovieRatings"]["Imdb"]["Value"] or "-", inline=False)
+        embed.add_field(name="Runtime", value=movie["Runtime"] or "-", inline=False)
+        embed.add_field(name="Genre", value=', '.join(movie["Genres"] or []), inline=False)
+        embed.add_field(name="Studio", value=movie["Studio"] or "-", inline=False)
+        embed.set_thumbnail(url=poster)
+        embed.set_image(url=fanart)
+        return embed
 
     async def _get_url_content(self, url: str):
         try:
