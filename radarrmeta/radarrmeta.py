@@ -5,7 +5,7 @@ import json
 from urllib.parse import urlparse
 
 import discord
-from discord_components import DiscordComponents, Button, ButtonStyle, InteractionType
+#from discord_components import DiscordComponents, Button, ButtonStyle, InteractionType
 from redbot.core import checks, commands
 from redbot.core.utils.chat_formatting import box, pagify
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
@@ -13,7 +13,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.13"
+__version__ = "1.1.14"
 
 
 class RadarrMeta(commands.Cog):
@@ -34,18 +34,43 @@ class RadarrMeta(commands.Cog):
         - `<movie>` The title to lookup, may include year.
         """
         async with ctx.typing():
-            url = "https://radarrapi.servarr.com/v1/search?q=" + movie
+            url = "https://api.radarr.video/v1/search?q=" + movie
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
                 if text:
                     movie_dict = json.loads(text)
                     if len(movie_dict) > 0:
-                        await ctx.send(embed=self._get_movie_embed(movie_dict[0]), components=[Button(style=ButtonStyle.URL, label="Tmdb", url="https://themoviedb.org"), Button(style=ButtonStyle.blue, label="Imdb", url="https://imdb.com")])
+                        await ctx.send(embed=self._get_movie_embed(movie_dict[0]))
                     else:
                         await ctx.send("Movie not found.")
                 else:
                     await ctx.send("Movie not found")
+            else:
+                return
+
+    @commands.group(invoke_without_command=True)
+    async def tv(self, ctx, *, show: str):
+        """
+        Base command for tv show lookup.
+
+        **Arguments:**
+
+        - `<show>` The title to lookup.
+        """
+        async with ctx.typing():
+            url = "https://skyhook.sonarr.tv/v1/tvdb/search/en/?term=" + show
+            valid_url = await self._valid_url(ctx, url)
+            if valid_url:
+                text = await self._get_url_content(url)
+                if text:
+                    show_dict = json.loads(text)
+                    if len(show_dict) > 0:
+                        await ctx.send(embed=self._get_tv_embed(show_dict[0]))
+                    else:
+                        await ctx.send("Show not found.")
+                else:
+                    await ctx.send("Show not found")
             else:
                 return
 
@@ -55,7 +80,7 @@ class RadarrMeta(commands.Cog):
         Input a TMDbId to lookup.
         """
         async with ctx.typing():
-            url = "https://radarrapi.servarr.com/v1/movie/" + tmdb_id
+            url = "https://api.radarr.video/v1/movie/" + tmdb_id
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
@@ -73,7 +98,7 @@ class RadarrMeta(commands.Cog):
         Input a IMDb Id to lookup.
         """
         async with ctx.typing():
-            url = "https://radarrapi.servarr.com/v1/movie/imdb/" + imdb_id
+            url = "https://api.radarr.video/v1/movie/imdb/" + imdb_id
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
@@ -116,6 +141,32 @@ class RadarrMeta(commands.Cog):
         embed.add_field(name="Runtime", value=movie["Runtime"] or "-", inline=True)
         embed.add_field(name="Genre", value=', '.join(movie["Genres"] or []), inline=True)
         embed.add_field(name="Studio", value=movie["Studio"] or "-", inline=True)
+        embed.set_thumbnail(url=poster)
+        embed.set_image(url=fanart)
+        return embed
+
+    @staticmethod
+    def _get_tv_embed(show):
+        poster = ""
+        fanart = ""
+        certification = ""
+        for dest in show["images"]:
+            if dest["coverType"] == "Poster":
+                poster = dest["Url"]
+            elif dest["coverType"] == "Fanart":
+                fanart = dest["Url"]
+
+        ratingString = ""
+        if show["rating"]["Value"] != 0:
+            ratingString = f"{show['rating']['Value']} ({show['MovieRatings']['Count']} Votes)"
+
+        embed = discord.Embed(title=show["title"], description=show["overview"] or "-", colour=0xb3a447)
+        embed.add_field(name="First Air", value=show["firstAired"] or "-", inline=True)
+        embed.add_field(name="Certification", value=show["contentRating"] or "-", inline=True)
+        embed.add_field(name="Rating", value=ratingString or "-", inline=True)
+        embed.add_field(name="Runtime", value=show["runtime"] or "-", inline=True)
+        embed.add_field(name="Genre", value=', '.join(show["genres"] or []), inline=True)
+        embed.add_field(name="Network", value=show["network"] or "-", inline=True)
         embed.set_thumbnail(url=poster)
         embed.set_image(url=fanart)
         return embed
