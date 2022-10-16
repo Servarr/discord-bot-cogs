@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 
 class RadarrMeta(commands.Cog):
@@ -23,7 +23,39 @@ class RadarrMeta(commands.Cog):
 
         self._headers = {'User-Agent': 'Python/3.8'}
 
-    @commands.command()
+    @commands.group()
+    async def movie(self, ctx, *, movie: str):
+        """
+        Base command for movie lookup.
+
+        **Arguments:**
+
+        - `<movie>` The title to lookup, may include year.
+        """
+        async with ctx.typing():
+            url = "https://radarrapi.servarr.com/v1/search?q=" + movie
+            valid_url = await self._valid_url(ctx, url)
+            if valid_url:
+                text = await self._get_url_content(url)
+                if text:
+                    movie_dict = json.loads(text)
+                    movie = movie_dict[0]
+                    poster = ""
+                    for dest in movie["Images"]:
+                        if dest["CoverType"] == "Poster":
+                            poster = dest["Url"]
+                    embed = discord.Embed(title=movie["Title"], description="", colour=await ctx.embed_colour())
+                    embed.add_field(name="Overview", value=movie["Overview"] or "-")
+                    embed.add_field(name="Year", value=movie["Year"] or "-", inline=False)
+                    embed.add_field(name="Studio", value=movie["Studio"] or "-", inline=False)
+                    embed.set_thumbnail(url=poster)
+                    await ctx.send(embed=embed)
+                else:
+                    await ctx.send("Movie not found")
+            else:
+                return
+
+    @movie.command()
     async def tmdb(self, ctx, tmdb_id: str):
         """
         Input a TMDbId to lookup.
@@ -50,7 +82,7 @@ class RadarrMeta(commands.Cog):
             else:
                 return
 
-    @commands.command()
+    @movie.command()
     async def imdb(self, ctx, imdb_id: str):
         """
         Input a IMDb Id to lookup.
