@@ -13,7 +13,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.21"
+__version__ = "1.1.22"
 
 
 class RadarrMeta(commands.Cog):
@@ -184,11 +184,11 @@ class RadarrMeta(commands.Cog):
 
         embed = discord.Embed(title=f"{show['title']} [{show['originalLanguage']}]", description=show["overview"] or "-", colour=0x0084ff)
         embed.add_field(name="First Air", value=show["firstAired"] or "-", inline=True)
-        embed.add_field(name="Certification", value=show["contentRating"] or "-", inline=True)
+        embed.add_field(name="Certification", value=show.get("contentRating", "-"), inline=True)
         embed.add_field(name="Rating", value=ratingString or "-", inline=True)
         embed.add_field(name="Runtime", value=show["runtime"] or "-", inline=True)
         embed.add_field(name="Genre", value=', '.join(show["genres"] or []), inline=True)
-        embed.add_field(name="Network", value=show["network"] or "-", inline=True)
+        embed.add_field(name="Network", value=show.get("network", "-"), inline=True)
         embed.set_thumbnail(url=poster)
         embed.set_image(url=fanart)
         return embed
