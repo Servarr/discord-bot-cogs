@@ -13,7 +13,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.20"
+__version__ = "1.1.21"
 
 
 class RadarrMeta(commands.Cog):
@@ -178,8 +178,9 @@ class RadarrMeta(commands.Cog):
                     fanart = dest["url"]
 
         ratingString = ""
-        if show["rating"]["value"] != 0:
-            ratingString = f"{show['rating']['value']} ({show['rating']['count']} Votes)"
+        if "rating" in show:
+            if show["rating"]["value"] != 0:
+                ratingString = f"{show['rating']['value']} ({show['rating']['count']} Votes)"
 
         embed = discord.Embed(title=f"{show['title']} [{show['originalLanguage']}]", description=show["overview"] or "-", colour=0x0084ff)
         embed.add_field(name="First Air", value=show["firstAired"] or "-", inline=True)
