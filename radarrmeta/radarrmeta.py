@@ -13,7 +13,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.17"
+__version__ = "1.1.18"
 
 
 class RadarrMeta(commands.Cog):
@@ -110,6 +110,24 @@ class RadarrMeta(commands.Cog):
                         await ctx.send("ImdbId doesn't exist or isn't on TMDb")
                 else:
                     await ctx.send("ImdbId doesn't exist or isn't on TMDb")
+            else:
+                return
+    
+    @tv.command(invoke_without_command=True)
+    async def tvdb(self, ctx, tvdb_id: str):
+        """
+        Input a TVDbId to lookup.
+        """
+        async with ctx.typing():
+            url = "https://skyhook.sonarr.tv/v1/tvdb/shows/en/" + tvdb_id
+            valid_url = await self._valid_url(ctx, url)
+            if valid_url:
+                text = await self._get_url_content(url)
+                if text:
+                    show_dict = json.loads(text)
+                    await ctx.send(embed=self._get_tv_embed(show_dict))
+                else:
+                    await ctx.send("TvdbId not found")
             else:
                 return
 
