@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.6"
+__version__ = "1.1.7"
 
 
 class RadarrMeta(commands.Cog):
@@ -87,7 +87,7 @@ class RadarrMeta(commands.Cog):
             else:
                 return
 
-    async def _get_movie_embed(self, movie: dict):
+    async def _get_movie_embed(self, movie):
         poster = ""
         fanart = ""
         certification = ""
