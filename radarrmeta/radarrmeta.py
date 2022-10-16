@@ -13,7 +13,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.22"
+__version__ = "1.1.23"
 
 
 class RadarrMeta(commands.Cog):
@@ -71,6 +71,31 @@ class RadarrMeta(commands.Cog):
                         await ctx.send("Show not found.")
                 else:
                     await ctx.send("Show not found")
+            else:
+                return
+
+    @commands.group(invoke_without_command=True)
+    async def music(self, ctx, *, artist: str):
+        """
+        Base command for music lookup.
+
+        **Arguments:**
+
+        - `<artist>` The title to lookup.
+        """
+        async with ctx.typing():
+            url = "https://api.lidarr.audio/api/v0.4/search?type=artist&query=" + artist
+            valid_url = await self._valid_url(ctx, url)
+            if valid_url:
+                text = await self._get_url_content(url)
+                if text:
+                    show_dict = json.loads(text)
+                    if len(show_dict) > 0:
+                        await ctx.send(embed=self._get_artist_embed(show_dict[0]))
+                    else:
+                        await ctx.send("Music not found.")
+                else:
+                    await ctx.send("Music not found")
             else:
                 return
 
@@ -182,13 +207,40 @@ class RadarrMeta(commands.Cog):
             if show["rating"]["value"] != 0:
                 ratingString = f"{show['rating']['value']} ({show['rating']['count']} Votes)"
 
-        embed = discord.Embed(title=f"{show['title']} [{show['originalLanguage']}]", description=show["overview"] or "-", colour=0x0084ff)
+        embed = discord.Embed(title=f"{show['title']} [{show['originalLanguage']}]", description=show.get("overview", "-"), colour=0x0084ff)
         embed.add_field(name="First Air", value=show["firstAired"] or "-", inline=True)
         embed.add_field(name="Certification", value=show.get("contentRating", "-"), inline=True)
         embed.add_field(name="Rating", value=ratingString or "-", inline=True)
         embed.add_field(name="Runtime", value=show["runtime"] or "-", inline=True)
         embed.add_field(name="Genre", value=', '.join(show["genres"] or []), inline=True)
         embed.add_field(name="Network", value=show.get("network", "-"), inline=True)
+        embed.set_thumbnail(url=poster)
+        embed.set_image(url=fanart)
+        return embed
+
+    @staticmethod
+    def _get_artist_embed(artist):
+        poster = ""
+        fanart = ""
+
+        if "images" in artist:
+            for dest in artist["images"]:
+                if dest["coverType"] == "Poster":
+                    poster = dest["url"]
+                elif dest["coverType"] == "Fanart":
+                    fanart = dest["url"]
+
+        ratingString = ""
+        if "rating" in artist:
+            if artist["rating"]["value"] != 0:
+                ratingString = f"{artist['rating']['value']} ({artist['rating']['count']} Votes)"
+
+        embed = discord.Embed(title=f"{artist['artistname']}", description=artist.get("overview", "-"), colour=0x0084ff)
+        embed.add_field(name="Disambiguation", value=artist["disambiguation"] or "-", inline=True)
+        embed.add_field(name="Rating", value=ratingString or "-", inline=True)
+        embed.add_field(name="Status", value=artist["status"] or "-", inline=True)
+        embed.add_field(name="Genre", value=', '.join(artist["genres"] or []), inline=True)
+        embed.add_field(name="Type", value=artist.get("type", "-"), inline=True)
         embed.set_thumbnail(url=poster)
         embed.set_image(url=fanart)
         return embed
