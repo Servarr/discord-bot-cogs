@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.10"
+__version__ = "1.1.11"
 
 
 class RadarrMeta(commands.Cog):
@@ -104,9 +104,9 @@ class RadarrMeta(commands.Cog):
 
         ratingString = ""
         if movie["MovieRatings"]["Imdb"]["Value"] != 0:
-            ratingString = f"{movie['MovieRatings']['Imdb']['Value']} ({movie['MovieRatings']['Imdb']['Votes']} Votes)"
+            ratingString = f"{movie['MovieRatings']['Imdb']['Value']} ({movie['MovieRatings']['Imdb']['Count']} Votes)"
         else:
-            ratingString = f"{movie['MovieRatings']['Tmdb']['Value']} ({movie['MovieRatings']['Tmdb']['Votes']} Votes)"
+            ratingString = f"{movie['MovieRatings']['Tmdb']['Value']} ({movie['MovieRatings']['Tmdb']['Count']} Votes)"
 
         embed = discord.Embed(title=movie["Title"], description=movie["Overview"] or "-", colour=0xb3a447)
         embed.add_field(name="Year", value=movie["Year"] or "-", inline=True)
