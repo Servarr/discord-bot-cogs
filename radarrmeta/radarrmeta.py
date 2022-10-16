@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.8"
+__version__ = "1.1.9"
 
 
 class RadarrMeta(commands.Cog):
@@ -102,7 +102,7 @@ class RadarrMeta(commands.Cog):
             if dest["Country"] == "US":
                 certification = dest["Certification"]
 
-        embed = discord.Embed(title=movie["Title"], description=movie["Overview"] or "-", colour=await ctx.embed_colour())
+        embed = discord.Embed(title=movie["Title"], description=movie["Overview"] or "-", colour=0xb3a447)
         embed.add_field(name="Year", value=movie["Year"] or "-", inline=False)
         embed.add_field(name="Certification", value=certification or "-", inline=False)
         embed.add_field(name="Rating", value=movie["MovieRatings"]["Imdb"]["Value"] or "-", inline=False)
