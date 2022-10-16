@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.3"
+__version__ = "1.1.4"
 
 
 class RadarrMeta(commands.Cog):
@@ -23,7 +23,7 @@ class RadarrMeta(commands.Cog):
 
         self._headers = {'User-Agent': 'Python/3.8'}
 
-    @commands.group()
+    @commands.group(invoke_without_command=True)
     async def movie(self, ctx, *, movie: str):
         """
         Base command for movie lookup.
@@ -55,7 +55,7 @@ class RadarrMeta(commands.Cog):
             else:
                 return
 
-    @movie.command()
+    @movie.command(invoke_without_command=True)
     async def tmdb(self, ctx, tmdb_id: str):
         """
         Input a TMDbId to lookup.
@@ -82,7 +82,7 @@ class RadarrMeta(commands.Cog):
             else:
                 return
 
-    @movie.command()
+    @movie.command(invoke_without_command=True)
     async def imdb(self, ctx, imdb_id: str):
         """
         Input a IMDb Id to lookup.
