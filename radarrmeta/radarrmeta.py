@@ -13,7 +13,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.19"
+__version__ = "1.1.20"
 
 
 class RadarrMeta(commands.Cog):
@@ -137,7 +137,7 @@ class RadarrMeta(commands.Cog):
         fanart = ""
         certification = ""
 
-        if movie["Images"]:
+        if "Images" in movie:
             for dest in movie["Images"]:
                 if dest["CoverType"] == "Poster":
                     poster = dest["Url"]
@@ -170,7 +170,7 @@ class RadarrMeta(commands.Cog):
         poster = ""
         fanart = ""
 
-        if show["images"]:
+        if "images" in show:
             for dest in show["images"]:
                 if dest["coverType"] == "Poster":
                     poster = dest["url"]
