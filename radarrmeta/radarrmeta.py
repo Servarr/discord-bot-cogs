@@ -13,7 +13,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.23"
+__version__ = "1.1.24"
 
 
 class RadarrMeta(commands.Cog):
@@ -225,17 +225,17 @@ class RadarrMeta(commands.Cog):
 
         if "images" in artist:
             for dest in artist["images"]:
-                if dest["coverType"] == "Poster":
-                    poster = dest["url"]
-                elif dest["coverType"] == "Fanart":
-                    fanart = dest["url"]
+                if dest["CoverType"] == "Poster":
+                    poster = dest["Url"]
+                elif dest["CoverType"] == "Fanart":
+                    fanart = dest["Url"]
 
         ratingString = ""
         if "rating" in artist:
             if artist["rating"]["value"] != 0:
                 ratingString = f"{artist['rating']['value']} ({artist['rating']['count']} Votes)"
 
-        embed = discord.Embed(title=f"{artist['artistname']}", description=artist.get("overview", "-"), colour=0x0084ff)
+        embed = discord.Embed(title=f"{artist['artistname']}", description=artist.get("overview", "-"), colour=0x40a333)
         embed.add_field(name="Disambiguation", value=artist["disambiguation"] or "-", inline=True)
         embed.add_field(name="Rating", value=ratingString or "-", inline=True)
         embed.add_field(name="Status", value=artist["status"] or "-", inline=True)
