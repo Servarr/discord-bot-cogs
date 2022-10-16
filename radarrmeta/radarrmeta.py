@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.9"
+__version__ = "1.1.10"
 
 
 class RadarrMeta(commands.Cog):
@@ -95,20 +95,26 @@ class RadarrMeta(commands.Cog):
         for dest in movie["Images"]:
             if dest["CoverType"] == "Poster":
                 poster = dest["Url"]
-            if dest["CoverType"] == "Fanart":
+            elif dest["CoverType"] == "Fanart":
                 fanart = dest["Url"]
 
         for dest in movie["Certifications"]:
             if dest["Country"] == "US":
                 certification = dest["Certification"]
 
+        ratingString = ""
+        if movie["MovieRatings"]["Imdb"]["Value"] != 0:
+            ratingString = f"{movie['MovieRatings']['Imdb']['Value']} ({movie['MovieRatings']['Imdb']['Votes']} Votes)"
+        else:
+            ratingString = f"{movie['MovieRatings']['Tmdb']['Value']} ({movie['MovieRatings']['Tmdb']['Votes']} Votes)"
+
         embed = discord.Embed(title=movie["Title"], description=movie["Overview"] or "-", colour=0xb3a447)
-        embed.add_field(name="Year", value=movie["Year"] or "-", inline=False)
-        embed.add_field(name="Certification", value=certification or "-", inline=False)
-        embed.add_field(name="Rating", value=movie["MovieRatings"]["Imdb"]["Value"] or "-", inline=False)
-        embed.add_field(name="Runtime", value=movie["Runtime"] or "-", inline=False)
-        embed.add_field(name="Genre", value=', '.join(movie["Genres"] or []), inline=False)
-        embed.add_field(name="Studio", value=movie["Studio"] or "-", inline=False)
+        embed.add_field(name="Year", value=movie["Year"] or "-", inline=True)
+        embed.add_field(name="Certification", value=certification or "-", inline=True)
+        embed.add_field(name="Rating", value=ratingString or "-", inline=True)
+        embed.add_field(name="Runtime", value=movie["Runtime"] or "-", inline=True)
+        embed.add_field(name="Genre", value=', '.join(movie["Genres"] or []), inline=True)
+        embed.add_field(name="Studio", value=movie["Studio"] or "-", inline=True)
         embed.set_thumbnail(url=poster)
         embed.set_image(url=fanart)
         return embed
