@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.5"
+__version__ = "1.1.6"
 
 
 class RadarrMeta(commands.Cog):
@@ -40,7 +40,7 @@ class RadarrMeta(commands.Cog):
                 if text:
                     movie_dict = json.loads(text)
                     if len(movie_dict) > 0:
-                        await ctx.send(embed=_get_movie_embed(movie_dict[0]))
+                        await ctx.send(embed=self._get_movie_embed(movie_dict[0]))
                     else:
                         await ctx.send("Movie not found.")
                 else:
@@ -60,7 +60,7 @@ class RadarrMeta(commands.Cog):
                 text = await self._get_url_content(url)
                 if text:
                     movie_dict = json.loads(text)
-                    await ctx.send(embed=_get_movie_embed(movie_dict))
+                    await ctx.send(embed=self._get_movie_embed(movie_dict))
                 else:
                     await ctx.send("TmdbId not found")
             else:
@@ -79,7 +79,7 @@ class RadarrMeta(commands.Cog):
                 if text:
                     movie_dict = json.loads(text)
                     if len(movie_dict) > 0:
-                        await ctx.send(embed=_get_movie_embed(movie_dict[0]))
+                        await ctx.send(embed=self._get_movie_embed(movie_dict[0]))
                     else:
                         await ctx.send("ImdbId doesn't exist or isn't on TMDb")
                 else:
