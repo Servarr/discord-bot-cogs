@@ -13,7 +13,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.15"
+__version__ = "1.1.16"
 
 
 class RadarrMeta(commands.Cog):
@@ -134,7 +134,7 @@ class RadarrMeta(commands.Cog):
         else:
             ratingString = f"{movie['MovieRatings']['Tmdb']['Value']} ({movie['MovieRatings']['Tmdb']['Count']} Votes)"
 
-        embed = discord.Embed(title=movie["Title"], description=movie["Overview"] or "-", colour=0xb3a447)
+        embed = discord.Embed(title=f"{movie["Title"]} [{movie["OriginalLanguage"]}]", description=movie["Overview"] or "-", colour=0xb3a447)
         embed.add_field(name="Year", value=movie["Year"] or "-", inline=True)
         embed.add_field(name="Certification", value=certification or "-", inline=True)
         embed.add_field(name="Rating", value=ratingString or "-", inline=True)
@@ -157,10 +157,10 @@ class RadarrMeta(commands.Cog):
                 fanart = dest["url"]
 
         ratingString = ""
-        if show["rating"]["Value"] != 0:
+        if show["rating"]["value"] != 0:
             ratingString = f"{show['rating']['value']} ({show['rating']['count']} Votes)"
 
-        embed = discord.Embed(title=show["title"], description=show["overview"] or "-", colour=0xb3a447)
+        embed = discord.Embed(title=f"{show["title"]} [{show["originalLanguage"]}]", description=show["overview"] or "-", colour=0x0084ff)
         embed.add_field(name="First Air", value=show["firstAired"] or "-", inline=True)
         embed.add_field(name="Certification", value=show["contentRating"] or "-", inline=True)
         embed.add_field(name="Rating", value=ratingString or "-", inline=True)
