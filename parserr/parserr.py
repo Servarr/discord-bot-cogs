@@ -253,7 +253,11 @@ class Parserr(commands.Cog):
     def _get_radarr_embed(response):
         embed = discord.Embed(title=f"Radarr Parse Result", description="", colour=0xb3a447)
         embed.add_field(name="Attempted Release Title", value=f"```{response['title']  or '-'}```", inline=False)
-        parsed_obj = response["parsedMovieInfo"]
+        parsed_obj = response.get("parsedMovieInfo")
+        if not parsed_obj:
+            embed.description = f"Failed to parse `{response['title']}`"
+            embed.colour = 0xff0000
+            return embed
         language_string = ", ".join((o["name"] for o in parsed_obj["languages"])) or "-"
         quality = parsed_obj["quality"]["quality"]["name"] or "-"
         quality_real = "True" if parsed_obj["quality"]["revision"]["real"] > 0 else "-" or "-"
@@ -277,7 +281,11 @@ class Parserr(commands.Cog):
     def _get_sonarr_embed(response):
         embed = discord.Embed(title=f"Sonarr Parse Result", description="", colour=0x0084ff)
         embed.add_field(name="Attempted Release Title", value=f"```{response['title']  or '-'}```", inline=False)
-        parsed_obj = response["parsedEpisodeInfo"]
+        parsed_obj = response.get("parsedEpisodeInfo")
+        if not parsed_obj:
+            embed.description = f"Failed to parse `{response['title']}`"
+            embed.colour = 0xff0000
+            return embed
         series_title_obj = parsed_obj["seriesTitleInfo"]
         all_titles_string = ", ".join((str(o) for o in series_title_obj.get("allTitles", []))) or "-"
         language = parsed_obj["language"]["name"] or "-"
@@ -314,7 +322,11 @@ class Parserr(commands.Cog):
     def _get_readarr_embed(response):
         embed = discord.Embed(title=f"Readarr Parse Result", description="", colour=0xff0000)
         embed.add_field(name="Attempted Release Title", value=f"```{response['title']  or '-'}```", inline=False)
-        parsed_obj = response["parsedBookInfo"]
+        parsed_obj = response.get("parsedBookInfo")
+        if not parsed_obj:
+            embed.description = f"Failed to parse `{response['title']}`"
+            embed.colour = 0xff0000
+            return embed
         quality = parsed_obj["quality"]["quality"]["name"] or "-"
         quality_real = "True" if parsed_obj["quality"]["revision"]["real"] > 0 else "-" or "-"
         quality_proper = "True" if parsed_obj["quality"]["revision"]["version"] > 1 else "-" or "-"
@@ -334,7 +346,11 @@ class Parserr(commands.Cog):
     def _get_lidarr_embed(response):
         embed = discord.Embed(title=f"Lidarr Parse Result", description="", colour=0x40a333)
         embed.add_field(name="Attempted Release Title", value=f"```{response['title']  or '-'}```", inline=False)
-        parsed_obj = response["parsedAlbumInfo"]
+        parsed_obj = response.get("parsedAlbumInfo")
+        if not parsed_obj:
+            embed.description = f"Failed to parse `{response['title']}`"
+            embed.colour = 0xff0000
+            return embed
         quality = parsed_obj["quality"]["quality"]["name"] or "-"
         quality_real = "True" if parsed_obj["quality"]["revision"]["real"] > 0 else "-" or "-"
         quality_proper = "True" if parsed_obj["quality"]["revision"]["version"] > 1 else "-" or "-"
