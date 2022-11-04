@@ -309,11 +309,11 @@ class Parserr(commands.Cog):
         embed.add_field(name="Multi Season", value=parsed_obj.get("isMultiSeason ", "-"), inline=True)
         embed.add_field(name="Daily", value=parsed_obj.get("isDaily", "-"), inline=True)
         embed.add_field(name="AirDate", value=parsed_obj.get("airDate", "-"), inline=True)
-        embed.add_field(name="Quality", value=quality, inline=False)
+        embed.add_field(name="Quality", value=quality, inline=True)
         embed.add_field(name="Proper", value=quality_proper, inline=True)
         embed.add_field(name="Real", value=quality_real, inline=True)
         embed.add_field(name="Repack", value=quality_repack, inline=True)
-        embed.add_field(name="Language", value=language, inline=False)
+        embed.add_field(name="Language", value=language, inline=True)
         embed.add_field(name="Release Group", value=parsed_obj.get("releaseGroup", "-"), inline=True)
         embed.add_field(name="Release Hash", value=parsed_obj["releaseHash"] or "-", inline=True)
         return embed
