@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 log = logging.getLogger("red.servarr.parserr")
 
-__version__ = "1.1.7"
+__version__ = "1.1.8"
 
 
 class Parserr(commands.Cog):
@@ -259,12 +259,13 @@ class Parserr(commands.Cog):
             embed.colour = 0xff0000
             return embed
         language_string = ", ".join((o["name"] for o in parsed_obj["languages"])) or "-"
+        titles_string = ", ".join((o for o in parsed_obj["movieTitles"])) or "-"
         quality = parsed_obj["quality"]["quality"]["name"] or "-"
         quality_real = "True" if parsed_obj["quality"]["revision"]["real"] > 0 else "-" or "-"
         quality_proper = "True" if parsed_obj["quality"]["revision"]["version"] > 1 else "-" or "-"
         quality_repack = "True" if parsed_obj["quality"]["revision"]["isRepack"] is True else "-" or "-"
 
-        embed.add_field(name="Movie Title", value=parsed_obj["movieTitle"] or "-", inline=True)
+        embed.add_field(name="Movie Title(s)", value=titles_string, inline=True)
         embed.add_field(name="Year", value=parsed_obj["year"] or "-", inline=True)
         embed.add_field(name="Edition", value=parsed_obj["edition"] or "-", inline=True)
         embed.add_field(name="TMDBId", value=parsed_obj["tmdbId"] or "-", inline=False)
