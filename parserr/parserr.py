@@ -151,13 +151,13 @@ class Parserr(commands.Cog):
         BRANCH = "v4"
         async with ctx.typing():
             base_url = self._url_fmt.format(arr="sonarr", branch=BRANCH)
-            url = f"{base_url}/api/v4/parse?apikey={self._apikey}&title={quote(release)}"
+            url = f"{base_url}/api/v3/parse?apikey={self._apikey}&title={quote(release)}"
             valid_url = await self._valid_url(ctx, url)
             if valid_url:
                 text = await self._get_url_content(url)
                 if text:
                     parse_dict = json.loads(text)
-                    version = await self._get_arr_version("sonarr", "v4", "v4")
+                    version = await self._get_arr_version("sonarr", "v3", "v4")
                     embed = self._get_sonarr_embed(parse_dict)
                     embed.set_footer(text=f"Sonarr Version {version} | Branch {BRANCH.capitalize()}")
 
