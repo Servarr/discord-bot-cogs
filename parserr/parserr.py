@@ -290,7 +290,7 @@ class Parserr(commands.Cog):
             return embed
         series_title_obj = parsed_obj["seriesTitleInfo"]
         all_titles_string = ", ".join((str(o) for o in series_title_obj.get("allTitles", []))) or "-"
-        language = parsed_obj["language"]["name"] or "-"
+        language = parsed_obj.get("language", {}).get("name", "-")
         quality = parsed_obj["quality"]["quality"]["name"] or "-"
         quality_real = "True" if parsed_obj["quality"]["revision"]["real"] > 0 else "-" or "-"
         quality_proper = "True" if parsed_obj["quality"]["revision"]["version"] > 1 else "-" or "-"
