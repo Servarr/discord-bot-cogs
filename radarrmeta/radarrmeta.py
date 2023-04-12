@@ -2,10 +2,14 @@ import asyncio
 import aiohttp
 import logging
 import json
+import os
+from collections import defaultdict
+from functools import reduce
+from typing import Dict, List
 from urllib.parse import urlparse
 
 import discord
-#from discord_components import DiscordComponents, Button, ButtonStyle, InteractionType
+# from discord_components import DiscordComponents, Button, ButtonStyle, InteractionType
 from redbot.core import checks, commands
 from redbot.core.utils.chat_formatting import box, pagify
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
@@ -13,7 +17,62 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.29"
+__version__ = "1.1.30"
+
+HEADERS = {"User-Agent": f"radarrmeta-cog/{__version__}"}
+RADARR_META_BASE = "https://api.radarr.video/v1"
+LIDARR_META_BASE = "https://api.lidarr.audio/api/v0.4"
+ARR_APIKEY = os.getenv("ARR_API_KEY")
+
+
+async def refresh_movies(ids: List[int]):
+    timeout = aiohttp.ClientTimeout(total=20)
+    async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
+        # TODO: apikey header
+        async with session.post(
+                f"{RADARR_META_BASE}/movie/bulk/refresh",
+                json=ids,
+                headers={"apikey": ARR_APIKEY, **HEADERS}
+        ) as resp:
+            return resp.status
+
+
+async def refresh_artist(mbid: str):
+    timeout = aiohttp.ClientTimeout(total=20)
+    async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
+        async with session.post(f"{LIDARR_META_BASE}/artist/{mbid}/refresh") as resp:
+            return resp.status
+
+
+async def refresh_album(mbid: str):
+    timeout = aiohttp.ClientTimeout(total=20)
+    async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
+        async with session.post(f"{LIDARR_META_BASE}/album/{mbid}/refresh") as resp:
+            return resp.status
+
+
+def collect_resources(indvidual_resources: List[str]) -> Dict[str, str]:
+    output = {"album": [], "artist": [], "movie": []}
+    for resource in indvidual_resources:
+        key, value = resource.split("/")
+        output[key].append(value)
+    return output
+
+
+async def process_refresh_resources(resources: str):
+    individual_resources = resources.split()
+    per_resource_type = collect_resources(individual_resources)
+    log.info(f"Refreshing {per_resource_type}")
+    futures = []
+    for mbid in per_resource_type["album"]:
+        futures.append(refresh_album(mbid))
+    for mbid in per_resource_type["artist"]:
+        futures.append(refresh_artist(mbid))
+    if per_resource_type["movie"]:
+        futures.append(refresh_movies(per_resource_type["movie"]))
+    responses = await asyncio.gather(*futures)
+    log.info(f"Refresh statuses: {responses}")
+    return responses
 
 
 class RadarrMeta(commands.Cog):
@@ -23,6 +82,13 @@ class RadarrMeta(commands.Cog):
         self.bot = bot
 
         self._headers = {'User-Agent': 'Python/3.8'}
+
+    @commands.group(invoke_without_command=True)
+    async def refresh(self, ctx, *, resources: str):
+        async with ctx.typing():
+            statuses = await process_refresh_resources(resources)
+            ctx.send(f"Refresh statuses: {statuses}")
+
 
     @commands.group(invoke_without_command=True)
     async def movie(self, ctx, *, movie: str):
@@ -162,7 +228,7 @@ class RadarrMeta(commands.Cog):
                     await ctx.send("ImdbId doesn't exist or isn't on TMDb")
             else:
                 return
-    
+
     @tv.command(invoke_without_command=True)
     async def tvdb(self, ctx, tvdb_id: str):
         """
