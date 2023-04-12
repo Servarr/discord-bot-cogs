@@ -22,7 +22,7 @@ __version__ = "1.1.30"
 HEADERS = {"User-Agent": f"radarrmeta-cog/{__version__}"}
 RADARR_META_BASE = "https://api.radarr.video/v1"
 LIDARR_META_BASE = "https://api.lidarr.audio/api/v0.4"
-ARR_APIKEY = os.getenv("ARR_API_KEY")
+RADARR_META_APIKEY = os.getenv("RADARR_META_API_KEY")
 
 
 async def refresh_movies(ids: List[int]):
@@ -32,7 +32,7 @@ async def refresh_movies(ids: List[int]):
         async with session.post(
                 f"{RADARR_META_BASE}/movie/bulk/refresh",
                 json=ids,
-                headers={"apikey": ARR_APIKEY, **HEADERS}
+                headers={"apikey": RADARR_META_APIKEY, **HEADERS}
         ) as resp:
             return resp.status
 
