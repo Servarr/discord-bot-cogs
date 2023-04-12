@@ -84,7 +84,7 @@ class RadarrMeta(commands.Cog):
         self._headers = {'User-Agent': 'Python/3.8'}
 
     @commands.group(invoke_without_command=True)
-    @commands.mod_or_permissions(admin=True)
+    @checks.mod_or_permissions(admin=True)
     async def refresh(self, ctx, *, resources: str):
         """
         Refreshes cached items
