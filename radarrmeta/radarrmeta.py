@@ -87,7 +87,7 @@ class RadarrMeta(commands.Cog):
     async def refresh(self, ctx, *, resources: str):
         async with ctx.typing():
             statuses = await process_refresh_resources(resources)
-            ctx.send(f"Refresh statuses: {statuses}")
+            await ctx.send(f"Refresh statuses: {statuses}")
 
 
     @commands.group(invoke_without_command=True)
