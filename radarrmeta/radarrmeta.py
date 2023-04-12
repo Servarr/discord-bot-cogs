@@ -84,7 +84,14 @@ class RadarrMeta(commands.Cog):
         self._headers = {'User-Agent': 'Python/3.8'}
 
     @commands.group(invoke_without_command=True)
+    @commands.mod_or_permissions(admin=True)
     async def refresh(self, ctx, *, resources: str):
+        """
+        Refreshes cached items
+
+        **Arguments:**
+        - `<resources>` Resource ids as album/mbid, artist/mbid, or movie/id
+        """
         async with ctx.typing():
             statuses = await process_refresh_resources(resources)
             await ctx.send(f"Refresh statuses: {statuses}")
