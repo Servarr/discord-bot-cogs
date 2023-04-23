@@ -1,0 +1,8 @@
+{
+    "author" : [ "TeamServarr" ],
+    "bot_version": [ 1, 2, 2 ],
+    "install_msg" : "Installed BanSync",
+    "short" : "Sync bans between guilds",
+    "description" : "Sync all bans and unbans between synced guilds",
+    "tags" : [ "bans", "sync" ]
+}
