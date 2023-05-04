@@ -1,5 +1,6 @@
 from .parserr import Parserr
+from redbot.core.bot import Red
 
-
-def setup(bot):
-    bot.add_cog(Parserr(bot))
+async def setup(bot: Red):
+    cog = Parserr(bot)
+    await bot.add_cog(cog)

@@ -65,8 +65,7 @@ class BanSync(commands.Cog):
     async def collect_guild_bans(self, guild):
         if guild is None:
             return
-        bans = await guild.bans()
-        for ban in bans:
+        async for ban in guild.bans(limit=1000):
             await self.sync_ban(guild, ban)
 
     async def enact_bans(self, guild):

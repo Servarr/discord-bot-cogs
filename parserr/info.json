@@ -4,5 +4,5 @@
     "short": "Parse results from arrs",
     "description": "Interact with Radarr/Lidarr/Readarr parse endpoints",
     "tags": ["api"],
-    "min_bot_version" : "3.4.0"
+    "min_bot_version" : "3.5.0"
 }

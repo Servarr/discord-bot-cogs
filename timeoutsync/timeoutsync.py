@@ -108,7 +108,7 @@ class TimeoutSync(commands.Cog):
                 await modlog.create_case(
                     self.bot,
                     self.bot.get_guild(id),
-                    ctx.message.created_at.replace(tzinfo=timezone.utc),
+                    ctx.message.created_at.replace(tzinfo=discord.utils.utcnow()),
                     "warning",
                     member,
                     author,

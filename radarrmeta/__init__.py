@@ -1,5 +1,7 @@
 from .radarrmeta import RadarrMeta
+from redbot.core.bot import Red
 
 
-def setup(bot):
-    bot.add_cog(RadarrMeta(bot))
+async def setup(bot: Red):
+    cog = RadarrMeta(bot)
+    await bot.add_cog(cog)

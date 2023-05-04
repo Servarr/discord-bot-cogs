@@ -1,5 +1,7 @@
 from .timeoutsync import TimeoutSync
+from redbot.core.bot import Red
 
 
-def setup(bot):
-    bot.add_cog(TimeoutSync(bot))
+async def setup(bot: Red):
+    cog = TimeoutSync(bot)
+    await bot.add_cog(cog)

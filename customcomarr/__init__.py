@@ -1,5 +1,7 @@
 from .customcomarr import CustomCommandarr
+from redbot.core.bot import Red
 
 
-def setup(bot):
-    bot.add_cog(CustomCommandarr(bot))
+async def setup(bot: Red):
+    cog = CustomCommandarr(bot)
+    await bot.add_cog(cog)

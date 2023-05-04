@@ -1,4 +1,7 @@
 from .bansync import BanSync
+from redbot.core.bot import Red
 
-def setup(bot):
-    bot.add_cog(BanSync(bot))
+
+async def setup(bot: Red):
+    cog = BanSync(bot)
+    await bot.add_cog(cog)
