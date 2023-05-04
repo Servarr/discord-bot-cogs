@@ -4,5 +4,6 @@
     "install_msg" : "Installed BanSync",
     "short" : "Sync bans between guilds",
     "description" : "Sync all bans and unbans between synced guilds",
+    "min_bot_version": "3.5.0",
     "tags" : [ "bans", "sync" ]
 }
