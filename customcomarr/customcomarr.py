@@ -164,7 +164,7 @@ class CommandObj:
         author = ctx.message.author
 
         if ask_for and not response:
-            await ctx.send(_("Do you want to create a 'randomized' global custom command? (y/n)"))
+            await ctx.send(_("Do you want to create a 'randomized' global custom command?") + " (yes/no)")
 
             pred = MessagePredicate.yes_or_no(ctx)
             try:
