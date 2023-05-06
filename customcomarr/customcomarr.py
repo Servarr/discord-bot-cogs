@@ -17,7 +17,7 @@ from redbot.core.utils.predicates import MessagePredicate
 
 _ = Translator("CustomCommandarr", __file__)
 
-__version__ = "1.0.2"
+__version__ = "1.1.0"
 
 class CCError(Exception):
     pass
