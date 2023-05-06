@@ -60,7 +60,6 @@ class CommandObj:
         return {k: v for k, v in _commands.items() if _commands[k]}
 
     async def redact_author_ids(self, user_id: int):
-
         all_guilds = await self.config.all_guilds()
 
         for guild_id in all_guilds.keys():
