@@ -3,10 +3,10 @@ import aiohttp
 import logging
 import os
 import json
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
 import discord
 
-from redbot.core import checks, commands, modlog, Config
+from redbot.core import commands, modlog, Config
 
 log = logging.getLogger("red.servarr.timeoutsync")
 
@@ -18,7 +18,7 @@ if listener is None:  # thanks Sinbad
         return lambda x: x
 
 
-__version__ = "1.0.21"
+__version__ = "1.0.22"
 
 
 class TimeoutSync(commands.Cog):
@@ -72,7 +72,7 @@ class TimeoutSync(commands.Cog):
 
     @commands.group(invoke_without_command=True)
     @commands.guild_only()
-    @checks.mod_or_permissions(administrator=True)
+    @commands.mod_or_permissions(administrator=True)
     async def timeout(self, ctx, member: discord.Member, time_in_mins: int, *, reason: str = None):
         """
         Timeout User
@@ -122,8 +122,8 @@ class TimeoutSync(commands.Cog):
             await ctx.send(f'Unable to timout user {member.name}')
 
     @timeout.command(name="synctoggle", help="Toggle whether or not a server is synced given its ID")
-    @checks.admin()
-    @checks.bot_in_a_guild()
+    @commands.admin()
+    @commands.bot_in_a_guild()
     async def syncserver(self, ctx, guild_id: int = None, *, dont_collect: bool = False):
         if guild_id is not None:
             guild = self.bot.get_guild(guild_id)
@@ -150,7 +150,7 @@ class TimeoutSync(commands.Cog):
         await ctx.send(message)
 
     @timeout.command(name="synclist", help="Print list of server set to be synced")
-    @checks.admin()
+    @commands.admin()
     async def synclist(self, ctx):
         sync_list = await self.config.sync_list()
         message = "Synced servers: "

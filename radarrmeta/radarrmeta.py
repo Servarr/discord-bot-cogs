@@ -3,21 +3,18 @@ import aiohttp
 import logging
 import json
 import os
-from collections import defaultdict
-from functools import reduce
 from typing import Dict, List
 from urllib.parse import urlparse
 
 import discord
-# from discord_components import DiscordComponents, Button, ButtonStyle, InteractionType
-from redbot.core import checks, commands
+from redbot.core import commands
 from redbot.core.utils.chat_formatting import box, pagify
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.30"
+__version__ = "1.1.31"
 
 HEADERS = {"User-Agent": f"radarrmeta-cog/{__version__}"}
 RADARR_META_BASE = "https://api.radarr.video/v1"
@@ -84,7 +81,7 @@ class RadarrMeta(commands.Cog):
         self._headers = {'User-Agent': 'Python/3.8'}
 
     @commands.group(invoke_without_command=True)
-    @checks.mod_or_permissions(administrator=True)
+    @commands.mod_or_permissions(administrator=True)
     async def refresh(self, ctx, *, resources: str):
         """
         Refreshes cached items
@@ -95,7 +92,6 @@ class RadarrMeta(commands.Cog):
         async with ctx.typing():
             statuses = await process_refresh_resources(resources)
             await ctx.send(f"Refresh statuses: {statuses}")
-
 
     @commands.group(invoke_without_command=True)
     async def movie(self, ctx, *, movie: str):
@@ -218,7 +214,7 @@ class RadarrMeta(commands.Cog):
     @movie.command(invoke_without_command=True)
     async def imdb(self, ctx, imdb_id: str):
         """
-        Input a IMDb Id to lookup.
+        Input an IMDb Id to lookup.
         """
         async with ctx.typing():
             url = "https://api.radarr.video/v1/movie/imdb/" + imdb_id
