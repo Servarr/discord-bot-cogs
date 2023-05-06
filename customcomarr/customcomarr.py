@@ -309,7 +309,7 @@ class CustomCommandarr(commands.Cog):
                     if len(msg) > 2000:
                         msg = f"{msg[:1997]}..."
                     msglist.append(msg)
-            await menus.menu(ctx, msglist, menus.DEFAULT_CONTROLS)
+            await menus.menu(ctx, msglist)
 
     @customcomarr.command(name="search")
     async def cc_search(self, ctx: commands.Context, *, query):
@@ -571,11 +571,11 @@ class CustomCommandarr(commands.Cog):
                 )
                 embed.set_footer(text=_("Page {num}/{total}").format(num=idx, total=len(pages)))
                 embed_pages.append(embed)
-            await menus.menu(ctx, embed_pages, menus.DEFAULT_CONTROLS)
+            await menus.menu(ctx, embed_pages)
         else:
             content = "\n".join(map("{0[0]:<12} : {0[1]}".format, results))
             pages = list(map(box, pagify(content, page_length=2000, shorten_by=10)))
-            await menus.menu(ctx, pages, menus.DEFAULT_CONTROLS)
+            await menus.menu(ctx, pages)
 
     @customcomarr.command(name="show")
     async def cc_show(self, ctx, command_name: str):
