@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 log = logging.getLogger("red.servarr.parserr")
 
-__version__ = "1.1.8"
+__version__ = "1.1.9"
 
 
 class Parserr(commands.Cog):
