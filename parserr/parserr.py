@@ -1,17 +1,19 @@
 import asyncio
-import aiohttp
+import json
 import logging
 import os
-import json
-from urllib.parse import urlparse, quote
+from urllib.parse import quote, urlparse
 
+import aiohttp
 import discord
-from redbot.core import commands
+from redbot.core import app_commands, commands
 
 log = logging.getLogger("red.servarr.parserr")
 
-__version__ = "1.1.9"
+__version__ = "1.2.0"
 
+class InvalidURL(Exception):
+    pass
 
 class Parserr(commands.Cog):
     """Grab stuff from a text API."""
@@ -25,29 +27,17 @@ class Parserr(commands.Cog):
         self._user = os.getenv("ARR_USER")
         self._password = os.getenv("ARR_PASSWORD")
 
-    @commands.group(invoke_without_command=True)
-    async def parse(self, ctx, *, release: str):
-        """Parse release names from Arrs.
+    parse = app_commands.Group(name="parser", description="Parses release names for arrs.")
 
-        If a program and branch are not specified, the server default will be used.
-
-        **Arguments:**
-
-        - `<release>` The release title to parse.
-        """
-        server = self._valid_server(ctx.message.guild.name)
-
-        if server == "Sonarr":
-            await ctx.invoke(self._sonarr_parse, release=release)
-        elif server == "Lidarr":
-            await ctx.invoke(self._lidarr_parse, release=release)
-        elif server == "Readarr":
-            await ctx.invoke(self._readarr_parse, release=release)
-        else:
-            await ctx.invoke(self._nightly_radarr_parse, release=release)
-
-    @parse.group(name="radarr", invoke_without_command=True)
-    async def _radarr_parse(self, ctx: commands.Context, *, release: str):
+    @parse.command()
+    @app_commands.describe(branch="Branch to run the release against.")
+    @app_commands.describe(release="Release name to parse.")
+    @app_commands.choices(branch=[
+        app_commands.Choice(name="Nightly", value="nightly"),
+        app_commands.Choice(name="Develop", value="develop"),
+        app_commands.Choice(name="Master", value="master"),
+    ])
+    async def radarr(self, interaction: discord.Interaction, release: str, branch: app_commands.Choice[str] = "nightly"):
         """Make a Radarr parse call
 
         If a branch is not specified, the nightly branch will be used.
@@ -56,88 +46,11 @@ class Parserr(commands.Cog):
 
         - `<release>` The release title to parse.
         """
-        await ctx.invoke(self._nightly_radarr_parse, release=release)
+        await self._response_builder(interaction=interaction, release=release, app="radarr", branch=branch, api=3)
 
-    @_radarr_parse.command(name="nightly")
-    async def _nightly_radarr_parse(self, ctx: commands.Context, *, release: str):
-        """Make a Radarr nightly parse call
-
-        **Arguments:**
-
-        - `<release>` The release title to parse.
-        """
-        async with ctx.typing():
-            base_url = self._url_fmt.format(arr="radarr", branch="nightly")
-            url = f"{base_url}/api/v3/parse?apikey={self._apikey}&title={quote(release)}"
-            valid_url = await self._valid_url(ctx, url)
-            if valid_url:
-                text = await self._get_url_content(url)
-                if text:
-                    parse_dict = json.loads(text)
-                    version = await self._get_arr_version("radarr", "V3", "nightly")
-                    embed = self._get_radarr_embed(parse_dict)
-                    embed.set_footer(text=f"Radarr Version {version} | Branch Nightly")
-
-                    await ctx.send(embed=embed)
-                else:
-                    await ctx.send("Parse error")
-            else:
-                return
-
-    @_radarr_parse.command(name="develop")
-    async def _develop_radarr_parse(self, ctx: commands.Context, *, release: str):
-        """Make a Radarr develop branch parse call
-
-        **Arguments:**
-
-        - `<release>` The release title to parse.
-        """
-        async with ctx.typing():
-            base_url = self._url_fmt.format(arr="radarr", branch="testing")
-            url = f"{base_url}/api/v3/parse?apikey={self._apikey}&title={quote(release)}"
-            valid_url = await self._valid_url(ctx, url)
-            if valid_url:
-                text = await self._get_url_content(url)
-                if text:
-                    parse_dict = json.loads(text)
-                    version = await self._get_arr_version("radarr", "V3", "testing")
-                    embed = self._get_radarr_embed(parse_dict)
-                    embed.set_footer(text=f"Radarr Version {version} | Branch Develop")
-
-                    await ctx.send(embed=embed)
-                else:
-                    await ctx.send("Parse error")
-            else:
-                return
-
-    @_radarr_parse.command(name="master")
-    async def _master_radarr_parse(self, ctx: commands.Context, *, release: str):
-        """Make a Radarr master branch parse call
-
-        **Arguments:**
-
-        - `<release>` The release title to parse.
-        """
-        async with ctx.typing():
-            base_url = self._url_fmt.format(arr="radarr", branch="release")
-            url = f"{base_url}/api/v3/parse?apikey={self._apikey}&title={quote(release)}"
-            valid_url = await self._valid_url(ctx, url)
-            if valid_url:
-                text = await self._get_url_content(url)
-                if text:
-                    parse_dict = json.loads(text)
-                    version = await self._get_arr_version("radarr", "V3", "release")
-                    embed = self._get_radarr_embed(parse_dict)
-                    embed.set_footer(text=f"Radarr Version {version} | Branch Master")
-
-                    await ctx.send(embed=embed)
-                else:
-                    await ctx.send("Parse error")
-            else:
-                return
-
-    @parse.command(name="sonarr")
-    async def _sonarr_parse(self, ctx: commands.Context, *, release: str):
+    @parse.command()
+    @app_commands.describe(release="Release name to parse.")
+    async def sonarr(self, interaction: discord.Interaction, release: str):
         """Make a Sonarr parse call
 
         If a branch is not specified, the nightly branch will be used.
@@ -146,27 +59,11 @@ class Parserr(commands.Cog):
 
         - `<release>` The release title to parse.
         """
-        BRANCH = "v4"
-        async with ctx.typing():
-            base_url = self._url_fmt.format(arr="sonarr", branch=BRANCH)
-            url = f"{base_url}/api/v3/parse?apikey={self._apikey}&title={quote(release)}"
-            valid_url = await self._valid_url(ctx, url)
-            if valid_url:
-                text = await self._get_url_content(url)
-                if text:
-                    parse_dict = json.loads(text)
-                    version = await self._get_arr_version("sonarr", "v3", "v4")
-                    embed = self._get_sonarr_embed(parse_dict)
-                    embed.set_footer(text=f"Sonarr Version {version} | Branch {BRANCH.capitalize()}")
+        await self._response_builder(interaction=interaction, release=release, app="sonarr", branch="v4", api=3)
 
-                    await ctx.send(embed=embed)
-                else:
-                    await ctx.send("Parse error")
-            else:
-                return
-
-    @parse.command(name="lidarr")
-    async def _lidarr_parse(self, ctx: commands.Context, *, release: str):
+    @parse.command()
+    @app_commands.describe(release="Release name to parse.")
+    async def lidarr(self, interaction: discord.Interaction, release: str):
         """Make a Lidarr parse call
 
         If a branch is not specified, the nightly branch will be used.
@@ -175,26 +72,11 @@ class Parserr(commands.Cog):
 
         - `<release>` The release title to parse.
         """
-        async with ctx.typing():
-            base_url = self._url_fmt.format(arr="lidarr", branch="nightly")
-            url = f"{base_url}/api/v1/parse?apikey={self._apikey}&title={quote(release)}"
-            valid_url = await self._valid_url(ctx, url)
-            if valid_url:
-                text = await self._get_url_content(url)
-                if text:
-                    parse_dict = json.loads(text)
-                    version = await self._get_arr_version("lidarr", "V1", "nightly")
-                    embed = self._get_lidarr_embed(parse_dict)
-                    embed.set_footer(text=f"Lidarr Version {version} | Branch Nightly")
+        await self._response_builder(interaction=interaction, release=release, app="lidarr", branch="nightly", api=1)
 
-                    await ctx.send(embed=embed)
-                else:
-                    await ctx.send("Parse error")
-            else:
-                return
-
-    @parse.command(name="readarr")
-    async def _readarr_parse(self, ctx: commands.Context, *, release: str):
+    @parse.command()
+    @app_commands.describe(release="Release name to parse.")
+    async def readarr(self, interaction: discord.Interaction, release: str):
         """Make a Readarr parse call
 
         If a branch is not specified, the nightly branch will be used.
@@ -203,23 +85,38 @@ class Parserr(commands.Cog):
 
         - `<release>` The release title to parse.
         """
-        async with ctx.typing():
-            base_url = self._url_fmt.format(arr="readarr", branch="nightly")
-            url = f"{base_url}/api/v1/parse?apikey={self._apikey}&title={quote(release)}"
-            valid_url = await self._valid_url(ctx, url)
-            if valid_url:
-                text = await self._get_url_content(url)
-                if text:
-                    parse_dict = json.loads(text)
-                    version = await self._get_arr_version("readarr", "V1", "nightly")
-                    embed = self._get_readarr_embed(parse_dict)
-                    embed.set_footer(text=f"Readarr Version {version} | Branch Nightly")
+        await self._response_builder(interaction=interaction, release=release, app="readarr", branch="nightly", api=1)
 
-                    await ctx.send(embed=embed)
-                else:
-                    await ctx.send("Parse error")
-            else:
-                return
+    async def _response_builder(self, interaction: discord.Interaction, release: str, app: str, branch: str = "nightly", api: int = 3):
+        branch = branch.value if isinstance(branch, app_commands.Choice) else branch
+        api_branch = branch
+        if app == "radarr":
+            api_branch = "testing" if branch != "develop" else branch
+
+        base_url = self._url_fmt.format(arr=app, branch=api_branch)
+        url = f"{base_url}/api/v{api}/parse?apikey={self._apikey}&title={quote(release)}"
+        try:
+            await self._valid_url(url)
+        except InvalidURL as err:
+            await interaction.response.send_message(f"Parse error:\n```{err}```", ephemeral=True)
+        text = await self._get_url_content(url)
+        if text:
+            parse_dict = json.loads(text)
+            version = await self._get_arr_version(app, f"V{api}", api_branch)
+
+            if app == "radarr":
+                embed = self._get_radarr_embed(parse_dict)
+            elif app == "sonarr":
+                embed = self._get_sonarr_embed(parse_dict)
+            elif app == "lidarr":
+                embed = self._get_lidarr_embed(parse_dict)
+            elif app == "readarr":
+                embed = self._get_readarr_embed(parse_dict)
+
+            embed.set_footer(text=f"{app.title()} Version {version} | Branch {branch.title()}")
+
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+
 
     async def _get_url_content(self, url: str):
         try:
@@ -378,21 +275,18 @@ class Parserr(commands.Cog):
         else:
             return "Radarr"
 
-    async def _valid_url(self, ctx, url: str):
+    async def _valid_url(self, url: str):
         try:
             result = urlparse(url)
         except Exception as e:
             log.exception(e, exc_info=e)
-            await ctx.send("There was an issue trying to fetch that site. Please check your console for the error.")
-            return None
+            raise InvalidURL("There was an issue trying to fetch that site. Please check your console for the error.")
 
         if all([result.scheme, result.netloc]):
             text = await self._get_url_content(url)
             if not text:
-                await ctx.send("No text present at the given url.")
-                return None
+                raise InvalidURL("No text present at the given url.")
             else:
                 return text
         else:
-            await ctx.send(f"That url seems to be incomplete.")
-            return None
+            raise InvalidURL(f"That url seems to be incomplete.")
