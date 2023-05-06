@@ -4,5 +4,6 @@
     "short": "Global custom commands",
     "description": "Create global custom commands that persist across servers",
     "tags": ["api"],
-    "min_bot_version" : "3.5.0"
+    "min_bot_version" : "3.5.0",
+    "requirements": ["rapidfuzz"]
 }

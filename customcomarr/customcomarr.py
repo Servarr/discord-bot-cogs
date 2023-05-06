@@ -7,7 +7,7 @@ from typing import Iterable, List, Mapping, Tuple, Dict, Set, Literal, Union
 from urllib.parse import quote_plus
 
 import discord
-from fuzzywuzzy import process
+from rapidfuzz import process
 
 from redbot.core import Config, checks, commands
 from redbot.core.i18n import Translator, cog_i18n
@@ -316,7 +316,7 @@ class CustomCommandarr(commands.Cog):
         """
         Searches through custom commands, according to the query.
 
-        Uses fuzzywuzzy searching to find close matches.
+        Uses fuzzy searching to find close matches.
 
         **Arguments:**
 
@@ -325,10 +325,10 @@ class CustomCommandarr(commands.Cog):
         cc_commands = await CommandObj.get_commands(self.config)
         extracted = process.extract(query, list(cc_commands.keys()))
         accepted = []
-        for entry in extracted:
-            if entry[1] > 60:
+        for key, score, __ in extracted:
+            if score > 60:
                 # Match was decently strong
-                accepted.append((entry[0], cc_commands[entry[0]]))
+                accepted.append((key, cc_commands[key]))
             else:
                 # Match wasn't strong enough
                 pass
