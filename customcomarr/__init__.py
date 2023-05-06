@@ -1,7 +1,7 @@
-from .customcomarr import CustomCommandarr
 from redbot.core.bot import Red
 
+from .customcomarr import CustomCommandarr
 
-async def setup(bot: Red):
-    cog = CustomCommandarr(bot)
-    await bot.add_cog(cog)
+
+async def setup(bot: Red) -> None:
+    await bot.add_cog(CustomCommandarr(bot))
