@@ -543,7 +543,7 @@ class CustomCommandarr(commands.Cog):
 
         **Arguments:**
 
-        - `<command>` The global custom command to show.
+        - `<command_name>` The global custom command to show.
         """
 
         try:
