@@ -1,23 +1,26 @@
 import asyncio
-import aiohttp
-import logging
 import json
+import logging
 import os
 from typing import Dict, List
 from urllib.parse import urlparse
 
+import aiohttp
 import discord
-from redbot.core import commands
+from redbot.core import app_commands, commands
 
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.1.31"
+__version__ = "1.2.0"
 
 HEADERS = {"User-Agent": f"radarrmeta-cog/{__version__}"}
 RADARR_META_BASE = "https://api.radarr.video/v1"
 LIDARR_META_BASE = "https://api.lidarr.audio/api/v0.4"
 RADARR_META_APIKEY = os.getenv("RADARR_META_API_KEY")
+
+class InvalidURL(Exception):
+    pass
 
 
 async def refresh_movies(ids: List[int]):
@@ -91,8 +94,11 @@ class RadarrMeta(commands.Cog):
             statuses = await process_refresh_resources(resources)
             await ctx.send(f"Refresh statuses: {statuses}")
 
-    @commands.group(invoke_without_command=True)
-    async def movie(self, ctx, *, movie: str):
+    movie = app_commands.Group(name="movie", description="Does lookups of movies.")
+
+    @movie.command(name="radarr", description="Looks up movies against Radarrs metadata server.")
+    @app_commands.describe(movie="The title to lookup, may include year.")
+    async def radarr(self, interaction: discord.Interaction, movie: str):
         """
         Base command for movie lookup.
 
@@ -100,24 +106,67 @@ class RadarrMeta(commands.Cog):
 
         - `<movie>` The title to lookup, may include year.
         """
-        async with ctx.typing():
-            url = "https://api.radarr.video/v1/search?q=" + movie
-            valid_url = await self._valid_url(ctx, url)
-            if valid_url:
-                text = await self._get_url_content(url)
-                if text:
-                    movie_dict = json.loads(text)
-                    if len(movie_dict) > 0:
-                        await ctx.send(embed=self._get_movie_embed(movie_dict[0]))
-                    else:
-                        await ctx.send("Movie not found.")
-                else:
-                    await ctx.send("Movie not found")
+        url = "https://api.radarr.video/v1/search?q=" + movie
+        try:
+            await self._valid_url(url)
+        except InvalidURL as err:
+            await interaction.response.send_message(f"Parse error:\n```{err}```", ephemeral=True)
+        text = await self._get_url_content(url)
+        if text:
+            movie_dict = json.loads(text)
+            if len(movie_dict) > 0:
+                await interaction.response.send_message(embed=self._get_movie_embed(movie_dict[0]))
             else:
-                return
+                await interaction.response.send_message("Movie not found.")
+        else:
+            await interaction.response.send_message("Movie not found")
 
-    @commands.group(invoke_without_command=True)
-    async def tv(self, ctx, *, show: str):
+    @movie.command()
+    @app_commands.describe(tmdb_id="TMDbId to lookup.")
+    @app_commands.rename(tmdb_id="tmdb")
+    async def tmdb(self, interaction: discord.Interaction, tmdb_id: str):
+        """
+        Input a TMDbId to lookup.
+        """
+        url = "https://api.radarr.video/v1/movie/" + tmdb_id
+        try:
+            await self._valid_url(url)
+        except InvalidURL as err:
+            await interaction.response.send_message(f"Parse error:\n```{err}```", ephemeral=True)
+        text = await self._get_url_content(url)
+        if text:
+            movie_dict = json.loads(text)
+            await interaction.response.send_message(embed=self._get_movie_embed(movie_dict))
+        else:
+            await interaction.response.send_message("TmdbId not found.")
+
+    @movie.command()
+    @app_commands.describe(imdb_id="IMDb to lookup.")
+    @app_commands.rename(imdb_id="imdb")
+    async def imdb(self, interaction: discord.Interaction, imdb_id: str):
+        """
+        Input an IMDb Id to lookup.
+        """
+        url = "https://api.radarr.video/v1/movie/imdb/" + imdb_id
+        try:
+            await self._valid_url(url)
+        except InvalidURL as err:
+            await interaction.response.send_message(f"Parse error:\n```{err}```", ephemeral=True)
+        text = await self._get_url_content(url)
+        if text:
+            movie_dict = json.loads(text)
+            if len(movie_dict) > 0:
+                await interaction.response.send_message(embed=self._get_movie_embed(movie_dict[0]))
+            else:
+                await interaction.response.send_message("ImdbId doesn't exist or isn't on TMDb.")
+        else:
+            await interaction.response.send_message("ImdbId doesn't exist or isn't on TMDb")
+
+    tv = app_commands.Group(name="tv", description="Does lookups of TV shows.")
+
+    @tv.command(description="Looks up TV shows against Sonarrs metadata server.")
+    @app_commands.describe(show="The title to lookup.")
+    async def sonarr(self, interaction: discord.Interaction, show: str):
         """
         Base command for tv show lookup.
 
@@ -125,24 +174,45 @@ class RadarrMeta(commands.Cog):
 
         - `<show>` The title to lookup.
         """
-        async with ctx.typing():
-            url = "https://skyhook.sonarr.tv/v1/tvdb/search/en/?term=" + show
-            valid_url = await self._valid_url(ctx, url)
-            if valid_url:
-                text = await self._get_url_content(url)
-                if text:
-                    show_dict = json.loads(text)
-                    if len(show_dict) > 0:
-                        await ctx.send(embed=self._get_tv_embed(show_dict[0]))
-                    else:
-                        await ctx.send("Show not found.")
-                else:
-                    await ctx.send("Show not found")
+        url = "https://skyhook.sonarr.tv/v1/tvdb/search/en/?term=" + show
+        try:
+            await self._valid_url(url)
+        except InvalidURL as err:
+            await interaction.response.send_message(f"Parse error:\n```{err}```", ephemeral=True)
+        text = await self._get_url_content(url)
+        if text:
+            show_dict = json.loads(text)
+            if len(show_dict) > 0:
+                await interaction.response.send_message(embed=self._get_tv_embed(show_dict[0]))
             else:
-                return
+                await interaction.response.send_message("Show not found.")
+        else:
+            await interaction.response.send_message("Show not found.")
 
-    @commands.group(invoke_without_command=True)
-    async def artist(self, ctx, *, artist: str):
+    @tv.command()
+    @app_commands.describe(tvdb_id="TVDbId to lookup.")
+    @app_commands.rename(tvdb_id="tvdb")
+    async def tvdb(self, interaction: discord.Interaction, tvdb_id: str):
+        """
+        Input a TVDbId to lookup.
+        """
+        url = "https://skyhook.sonarr.tv/v1/tvdb/shows/en/" + tvdb_id
+        try:
+            await self._valid_url(url)
+        except InvalidURL as err:
+            await interaction.response.send_message(f"Parse error:\n```{err}```", ephemeral=True)
+        text = await self._get_url_content(url)
+        if text:
+            show_dict = json.loads(text)
+            await interaction.response.send_message(embed=self._get_tv_embed(show_dict))
+        else:
+            await interaction.response.send_message("TvdbId not found")
+
+    music = app_commands.Group(name="music", description="Does lookups of artists and albums.")
+
+    @music.command()
+    @app_commands.describe(artist="artist to lookup.")
+    async def artist(self, interaction: discord.Interaction, artist: str):
         """
         Base command for artist lookup.
 
@@ -150,24 +220,24 @@ class RadarrMeta(commands.Cog):
 
         - `<artist>` The name to lookup.
         """
-        async with ctx.typing():
-            url = "https://api.lidarr.audio/api/v0.4/search?type=artist&query=" + artist
-            valid_url = await self._valid_url(ctx, url)
-            if valid_url:
-                text = await self._get_url_content(url)
-                if text:
-                    show_dict = json.loads(text)
-                    if len(show_dict) > 0:
-                        await ctx.send(embed=self._get_artist_embed(show_dict[0]))
-                    else:
-                        await ctx.send("Artist not found.")
-                else:
-                    await ctx.send("Artist not found")
+        url = "https://api.lidarr.audio/api/v0.4/search?type=artist&query=" + artist
+        try:
+            await self._valid_url(url)
+        except InvalidURL as err:
+            await interaction.response.send_message(f"Parse error:\n```{err}```", ephemeral=True)
+        text = await self._get_url_content(url)
+        if text:
+            show_dict = json.loads(text)
+            if len(show_dict) > 0:
+                await interaction.response.send_message(embed=self._get_artist_embed(show_dict[0]))
             else:
-                return
+                await interaction.response.send_message("Artist not found.")
+        else:
+            await interaction.response.send_message("Artist not found")
 
-    @commands.group(invoke_without_command=True)
-    async def album(self, ctx, *, artist: str):
+    @music.command()
+    @app_commands.describe(album="album to lookup.")
+    async def album(self, interaction: discord.Interaction, album: str):
         """
         Base command for album lookup.
 
@@ -175,78 +245,21 @@ class RadarrMeta(commands.Cog):
 
         - `<album>` The title to lookup.
         """
-        async with ctx.typing():
-            url = "https://api.lidarr.audio/api/v0.4/search?type=album&query=" + artist
-            valid_url = await self._valid_url(ctx, url)
-            if valid_url:
-                text = await self._get_url_content(url)
-                if text:
-                    show_dict = json.loads(text)
-                    if len(show_dict) > 0:
-                        await ctx.send(embed=self._get_album_embed(show_dict[0]))
-                    else:
-                        await ctx.send("Album not found.")
-                else:
-                    await ctx.send("Album not found")
+        url = "https://api.lidarr.audio/api/v0.4/search?type=album&query=" + album
+        try:
+            await self._valid_url(url)
+        except InvalidURL as err:
+            await interaction.response.send_message(f"Parse error:\n```{err}```", ephemeral=True)
+        text = await self._get_url_content(url)
+        if text:
+            show_dict = json.loads(text)
+            if len(show_dict) > 0:
+                await interaction.response.send_message(embed=self._get_album_embed(show_dict[0]))
             else:
-                return
+                await interaction.response.send_message("Album not found.")
+        else:
+            await interaction.response.send_message("Album not found")
 
-    @movie.command(invoke_without_command=True)
-    async def tmdb(self, ctx, tmdb_id: str):
-        """
-        Input a TMDbId to lookup.
-        """
-        async with ctx.typing():
-            url = "https://api.radarr.video/v1/movie/" + tmdb_id
-            valid_url = await self._valid_url(ctx, url)
-            if valid_url:
-                text = await self._get_url_content(url)
-                if text:
-                    movie_dict = json.loads(text)
-                    await ctx.send(embed=self._get_movie_embed(movie_dict))
-                else:
-                    await ctx.send("TmdbId not found")
-            else:
-                return
-
-    @movie.command(invoke_without_command=True)
-    async def imdb(self, ctx, imdb_id: str):
-        """
-        Input an IMDb Id to lookup.
-        """
-        async with ctx.typing():
-            url = "https://api.radarr.video/v1/movie/imdb/" + imdb_id
-            valid_url = await self._valid_url(ctx, url)
-            if valid_url:
-                text = await self._get_url_content(url)
-                if text:
-                    movie_dict = json.loads(text)
-                    if len(movie_dict) > 0:
-                        await ctx.send(embed=self._get_movie_embed(movie_dict[0]))
-                    else:
-                        await ctx.send("ImdbId doesn't exist or isn't on TMDb")
-                else:
-                    await ctx.send("ImdbId doesn't exist or isn't on TMDb")
-            else:
-                return
-
-    @tv.command(invoke_without_command=True)
-    async def tvdb(self, ctx, tvdb_id: str):
-        """
-        Input a TVDbId to lookup.
-        """
-        async with ctx.typing():
-            url = "https://skyhook.sonarr.tv/v1/tvdb/shows/en/" + tvdb_id
-            valid_url = await self._valid_url(ctx, url)
-            if valid_url:
-                text = await self._get_url_content(url)
-                if text:
-                    show_dict = json.loads(text)
-                    await ctx.send(embed=self._get_tv_embed(show_dict))
-                else:
-                    await ctx.send("TvdbId not found")
-            else:
-                return
 
     @staticmethod
     def _get_movie_embed(movie):
@@ -385,21 +398,18 @@ class RadarrMeta(commands.Cog):
             log.error(f"General failure accessing site at url:\n\t{url}", exc_info=True)
             return None
 
-    async def _valid_url(self, ctx, url: str):
+    async def _valid_url(self, url: str):
         try:
             result = urlparse(url)
         except Exception as e:
             log.exception(e, exc_info=e)
-            await ctx.send("There was an issue trying to fetch that site. Please check your console for the error.")
-            return None
+            raise InvalidURL("There was an issue trying to fetch that site. Please check your console for the error.")
 
         if all([result.scheme, result.netloc]):
             text = await self._get_url_content(url)
             if not text:
-                await ctx.send("No text present at the given url.")
-                return None
+                raise InvalidURL("No text present at the given url.")
             else:
                 return text
         else:
-            await ctx.send(f"That url seems to be incomplete.")
-            return None
+            raise InvalidURL(f"That url seems to be incomplete.")
