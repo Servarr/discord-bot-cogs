@@ -6,9 +6,7 @@ import json
 from urllib.parse import urlparse, quote
 
 import discord
-from redbot.core import checks, commands
-from redbot.core.utils.chat_formatting import box, pagify
-from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
+from redbot.core import commands
 
 log = logging.getLogger("red.servarr.parserr")
 

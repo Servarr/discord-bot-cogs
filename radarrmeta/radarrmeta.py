@@ -8,8 +8,6 @@ from urllib.parse import urlparse
 
 import discord
 from redbot.core import commands
-from redbot.core.utils.chat_formatting import box, pagify
-from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 log = logging.getLogger("red.servarr.radarrmeta")
 

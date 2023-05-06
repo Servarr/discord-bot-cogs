@@ -1,7 +1,7 @@
 import discord
 from discord.guild import BanEntry
 import asyncio
-from redbot.core import commands, checks, Config, utils
+from redbot.core import commands, Config, utils
 
 # red 3.0 backwards compatibility support
 listener = getattr(commands.Cog, "listener", None)
@@ -131,8 +131,8 @@ class BanSync(commands.Cog):
                 pass
 
     @commands.command(name="synctoggle", help="Toggle whether or not a server is synced given its ID")
-    @checks.admin()
-    @checks.bot_in_a_guild()
+    @commands.admin()
+    @commands.bot_in_a_guild()
     async def syncserver(self, ctx, guild_id: int = None, *, dont_collect: bool = False):
         if guild_id is not None:
             guild = self.bot.get_guild(guild_id)
@@ -159,7 +159,7 @@ class BanSync(commands.Cog):
         await ctx.send(message)
 
     @commands.command(name="synclist", help="Print list of server set to be synced")
-    @checks.admin()
+    @commands.admin()
     async def synclist(self, ctx):
         sync_list = await self.config.sync_list()
         message = "Synced servers: "
@@ -169,7 +169,7 @@ class BanSync(commands.Cog):
         await ctx.send(message[:-2])
 
     @commands.command(name="syncedbans", help="Print a list of bans and reasons that have been synced")
-    @checks.admin()
+    @commands.admin()
     async def syncedbans(self, ctx):
         ban_list = await self.config.ban_list()
         message = "Synced bans:\n"
@@ -179,14 +179,14 @@ class BanSync(commands.Cog):
             await ctx.send(content)
 
     @commands.command(name="synctasks", help="Print number of tasks currently queued")
-    @checks.admin()
+    @commands.admin()
     async def synctasks(self, ctx):
         queue = await self.config.ban_queue()
         await ctx.send('{0} tasks currently in queue'.format(len(queue)))
 
     @commands.command(name="syncrecover", help="Check ban syncs on all servers")
-    @checks.is_owner()
-    @checks.bot_in_a_guild()
+    @commands.is_owner()
+    @commands.bot_in_a_guild()
     async def syncrecover(self, ctx):
         message = await ctx.send('Removing duplicate bans...')
         await self.remove_duplicates()
@@ -256,7 +256,7 @@ class BanSync(commands.Cog):
         print('Consumer stopped')
 
     @commands.command()
-    @checks.is_owner()
+    @commands.is_owner()
     async def testban(self, ctx, id: int = None, reason: str = None):
         await ctx.guild.ban(discord.Object(id),reason=reason)
 
