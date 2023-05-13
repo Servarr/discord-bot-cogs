@@ -98,7 +98,7 @@ class Parserr(commands.Cog):
         try:
             await self._valid_url(url)
         except InvalidURL as err:
-            await interaction.response.send_message(f"Parse error:\n```{err}```", ephemeral=True)
+            await interaction.response.send_message(f"Parse error:\n```{err}```", ephemeral=False)
         text = await self._get_url_content(url)
         if text:
             parse_dict = json.loads(text)
@@ -115,7 +115,7 @@ class Parserr(commands.Cog):
 
             embed.set_footer(text=f"{app.title()} Version {version} | Branch {branch.title()}")
 
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.response.send_message(embed=embed, ephemeral=False)
 
 
     async def _get_url_content(self, url: str):
