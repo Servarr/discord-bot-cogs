@@ -27,7 +27,7 @@ class Parserr(commands.Cog):
         self._user = os.getenv("ARR_USER")
         self._password = os.getenv("ARR_PASSWORD")
 
-    parse = app_commands.Group(name="parser", description="Parses release names for arrs.")
+    parse = app_commands.Group(name="parse", description="Parses release names for arrs.")
 
     @parse.command()
     @app_commands.describe(branch="Branch to run the release against.")
