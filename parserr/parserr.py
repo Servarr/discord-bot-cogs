@@ -204,6 +204,7 @@ class Parserr(commands.Cog):
         embed.add_field(name="Full Season", value=parsed_obj.get("fullSeason", "-"), inline=True)
         embed.add_field(name="Partial Season", value=parsed_obj.get("isPartialSeason", "-"), inline=True)
         embed.add_field(name="Multi Season", value=parsed_obj.get("isMultiSeason ", "-"), inline=True)
+        embed.add_field(name="Season Extra", value=parsed_obj.get("isSeasonExtra ", "-"), inline=True)
         embed.add_field(name="Daily", value=parsed_obj.get("isDaily", "-"), inline=True)
         embed.add_field(name="AirDate", value=parsed_obj.get("airDate", "-"), inline=True)
         embed.add_field(name="Quality", value=quality, inline=True)
