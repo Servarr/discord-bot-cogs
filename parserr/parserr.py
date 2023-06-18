@@ -164,13 +164,13 @@ class Parserr(commands.Cog):
         embed.add_field(name="Movie Title(s)", value=titles_string, inline=True)
         embed.add_field(name="Year", value=parsed_obj["year"] or "-", inline=True)
         embed.add_field(name="Edition", value=parsed_obj["edition"] or "-", inline=True)
-        embed.add_field(name="TMDBId", value=parsed_obj["tmdbId"] or "-", inline=False)
-        embed.add_field(name="IMDbId", value=parsed_obj["imdbId"] or "-", inline=False)
-        embed.add_field(name="Quality", value=quality, inline=False)
+        embed.add_field(name="TMDBId", value=parsed_obj["tmdbId"] or "-", inline=True)
+        embed.add_field(name="IMDbId", value=parsed_obj["imdbId"] or "-", inline=True)
+        embed.add_field(name="Quality", value=quality, inline=True)
         embed.add_field(name="Proper", value=quality_proper, inline=True)
         embed.add_field(name="Real", value=quality_real, inline=True)
         embed.add_field(name="Repack", value=quality_repack, inline=True)
-        embed.add_field(name="Languages", value=language_string, inline=False)
+        embed.add_field(name="Languages", value=language_string, inline=True)
         embed.add_field(name="Release Group", value=parsed_obj.get("releaseGroup", "-"), inline=False)
         return embed
 
