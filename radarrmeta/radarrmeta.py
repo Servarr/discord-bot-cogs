@@ -26,9 +26,19 @@ class InvalidURL(Exception):
 async def refresh_movies(ids: List[int]):
     timeout = aiohttp.ClientTimeout(total=20)
     async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
-        # TODO: apikey header
         async with session.post(
                 f"{RADARR_META_BASE}/movie/bulk/refresh",
+                json=ids,
+                headers={"apikey": RADARR_META_APIKEY, **HEADERS}
+        ) as resp:
+            return resp.status
+
+
+async def refresh_collections(ids: List[int]):
+    timeout = aiohttp.ClientTimeout(total=20)
+    async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
+        async with session.post(
+                f"{RADARR_META_BASE}/collection/bulk/refresh",
                 json=ids,
                 headers={"apikey": RADARR_META_APIKEY, **HEADERS}
         ) as resp:
@@ -50,7 +60,7 @@ async def refresh_album(mbid: str):
 
 
 def collect_resources(indvidual_resources: List[str]) -> Dict[str, str]:
-    output = {"album": [], "artist": [], "movie": []}
+    output = {"album": [], "artist": [], "movie": [], "collection": []}
     for resource in indvidual_resources:
         key, value = resource.split("/")
         output[key].append(value)
@@ -68,6 +78,8 @@ async def process_refresh_resources(resources: str):
         futures.append(refresh_artist(mbid))
     if per_resource_type["movie"]:
         futures.append(refresh_movies(per_resource_type["movie"]))
+    if ids := per_resource_type["collection"]:
+        futures.append(refresh_collections(ids))
     responses = await asyncio.gather(*futures)
     log.info(f"Refresh statuses: {responses}")
     return responses
