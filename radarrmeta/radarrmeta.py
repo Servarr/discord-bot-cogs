@@ -38,7 +38,7 @@ async def refresh_collections(ids: List[int]):
     timeout = aiohttp.ClientTimeout(total=20)
     async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
         async with session.post(
-                f"{RADARR_META_BASE}/collection/bulk/refresh",
+                f"{RADARR_META_BASE}/movie/collection/bulk/refresh",
                 json=ids,
                 headers={"apikey": RADARR_META_APIKEY, **HEADERS}
         ) as resp:
