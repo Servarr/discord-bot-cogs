@@ -17,7 +17,9 @@ __version__ = "1.2.0"
 HEADERS = {"User-Agent": f"radarrmeta-cog/{__version__}"}
 RADARR_META_BASE = "https://api.radarr.video/v1"
 LIDARR_META_BASE = "https://api.lidarr.audio/api/v0.4"
+WHISPARR_META_BASE = "https://api.whisparr.com/v3"
 RADARR_META_APIKEY = os.getenv("RADARR_META_API_KEY")
+WHISPARR_META_APIKEY = os.getenv("WHISPARR_META_API_KEY")
 
 class InvalidURL(Exception):
     pass
@@ -57,10 +59,40 @@ async def refresh_album(mbid: str):
     async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
         async with session.post(f"{LIDARR_META_BASE}/album/{mbid}/refresh") as resp:
             return resp.status
+        
+async def refresh_xxx_sites(ids: List[int]):
+    timeout = aiohttp.ClientTimeout(total=20)
+    async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
+        async with session.post(
+                f"{WHISPARR_META_BASE}/site/bulk/refresh",
+                json=ids,
+                headers={"apikey": WHISPARR_META_APIKEY, **HEADERS}
+        ) as resp:
+            return resp.status
+        
+async def refresh_xxx_scenes(ids: List[int]):
+    timeout = aiohttp.ClientTimeout(total=20)
+    async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
+        async with session.post(
+                f"{WHISPARR_META_BASE}/scene/bulk/refresh",
+                json=ids,
+                headers={"apikey": WHISPARR_META_APIKEY, **HEADERS}
+        ) as resp:
+            return resp.status
+        
+async def refresh_xxx_movies(ids: List[int]):
+    timeout = aiohttp.ClientTimeout(total=20)
+    async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
+        async with session.post(
+                f"{WHISPARR_META_BASE}/movie/bulk/refresh",
+                json=ids,
+                headers={"apikey": WHISPARR_META_APIKEY, **HEADERS}
+        ) as resp:
+            return resp.status
 
 
 def collect_resources(indvidual_resources: List[str]) -> Dict[str, str]:
-    output = {"album": [], "artist": [], "movie": [], "collection": []}
+    output = {"album": [], "artist": [], "movie": [], "collection": [], "xxx_site": [], "xxx_scene": [], "xxx_movie": []}
     for resource in indvidual_resources:
         key, value = resource.split("/")
         output[key].append(value)
@@ -78,6 +110,12 @@ async def process_refresh_resources(resources: str):
         futures.append(refresh_artist(mbid))
     if per_resource_type["movie"]:
         futures.append(refresh_movies(per_resource_type["movie"]))
+    if per_resource_type["xxx_site"]:
+        futures.append(refresh_xxx_sites(per_resource_type["xxx_site"]))
+    if per_resource_type["xxx_scene"]:
+        futures.append(refresh_xxx_scenes(per_resource_type["xxx_scene"]))
+    if per_resource_type["xxx_movie"]:
+        futures.append(refresh_xxx_movies(per_resource_type["xxx_movie"]))
     if ids := per_resource_type["collection"]:
         futures.append(refresh_collections(ids))
     responses = await asyncio.gather(*futures)
