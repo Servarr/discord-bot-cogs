@@ -141,8 +141,11 @@ class RadarrMeta(commands.Cog):
         - `<resources>` Resource ids as album/mbid, artist/mbid, or movie/id
         """
         async with ctx.typing():
-            statuses = await process_refresh_resources(resources)
-            await ctx.send(f"Refresh statuses: {statuses}")
+            try:
+                statuses = await process_refresh_resources(resources)
+                await ctx.send(f"Refresh statuses: {statuses}")
+            except asyncio.TimeoutError:
+                await ctx.send("Refresh timed out")
 
     movie = app_commands.Group(name="movie", description="Does lookups of movies.")
 
