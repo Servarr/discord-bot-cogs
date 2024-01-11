@@ -12,13 +12,15 @@ from redbot.core import app_commands, commands
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 HEADERS = {"User-Agent": f"radarrmeta-cog/{__version__}"}
 RADARR_META_BASE = "https://api.radarr.video/v1"
 LIDARR_META_BASE = "https://api.lidarr.audio/api/v0.4"
 WHISPARR_META_BASE = "https://api.whisparr.com/v3"
+READARR_META_BASE = "https://api.bookinfo.club/v1"
 RADARR_META_APIKEY = os.getenv("RADARR_META_API_KEY")
+READARR_META_APIKEY = os.getenv("READARR_META_API_KEY")
 WHISPARR_META_APIKEY = os.getenv("WHISPARR_META_API_KEY")
 
 class InvalidURL(Exception):
@@ -46,6 +48,14 @@ async def refresh_collections(ids: List[int]):
         ) as resp:
             return resp.status
 
+async def refresh_author(goodreadsid: str):
+    timeout = aiohttp.ClientTimeout(total=20)
+    async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
+        async with session.post(
+                f"{READARR_META_BASE}/author/{goodreadsid}/refresh",
+                headers={"apikey": READARR_META_APIKEY, **HEADERS}
+        ) as resp:
+            return resp.status
 
 async def refresh_artist(mbid: str):
     timeout = aiohttp.ClientTimeout(total=20)
@@ -92,7 +102,7 @@ async def refresh_xxx_movies(ids: List[int]):
 
 
 def collect_resources(indvidual_resources: List[str]) -> Dict[str, str]:
-    output = {"album": [], "artist": [], "movie": [], "collection": [], "xxx_site": [], "xxx_scene": [], "xxx_movie": []}
+    output = {"album": [], "artist": [], "author": [], "movie": [], "collection": [], "xxx_site": [], "xxx_scene": [], "xxx_movie": []}
     for resource in indvidual_resources:
         key, value = resource.split("/")
         output[key].append(value)
@@ -108,6 +118,8 @@ async def process_refresh_resources(resources: str):
         futures.append(refresh_album(mbid))
     for mbid in per_resource_type["artist"]:
         futures.append(refresh_artist(mbid))
+    for goodreadsid in per_resource_type["author"]:
+        futures.append(refresh_author(goodreadsid))
     if per_resource_type["movie"]:
         futures.append(refresh_movies(per_resource_type["movie"]))
     if per_resource_type["xxx_site"]:
