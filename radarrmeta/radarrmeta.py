@@ -33,7 +33,7 @@ async def refresh_movies(ids: List[int]):
         async with session.post(
                 f"{RADARR_META_BASE}/movie/bulk/refresh",
                 json=ids,
-                headers={"X-Api-Key": RADARR_META_APIKEY, **HEADERS}
+                headers={"apikey": RADARR_META_APIKEY, **HEADERS}
         ) as resp:
             return resp.status
 
@@ -53,7 +53,7 @@ async def refresh_author(goodreadsid: str):
     async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
         async with session.post(
                 f"{READARR_META_BASE}/author/{goodreadsid}/refresh",
-                headers={"apikey": READARR_META_APIKEY, **HEADERS}
+                headers={"X-Api-Key": READARR_META_APIKEY, **HEADERS}
         ) as resp:
             return resp.status
 
