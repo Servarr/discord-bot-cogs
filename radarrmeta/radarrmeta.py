@@ -33,7 +33,7 @@ async def refresh_movies(ids: List[int]):
         async with session.post(
                 f"{RADARR_META_BASE}/movie/bulk/refresh",
                 json=ids,
-                headers={"apikey": RADARR_META_APIKEY, **HEADERS}
+                headers={"X-Api-Key": RADARR_META_APIKEY, **HEADERS}
         ) as resp:
             return resp.status
 
