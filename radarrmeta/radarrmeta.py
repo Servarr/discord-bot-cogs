@@ -22,6 +22,16 @@ READARR_META_BASE = "https://api.bookinfo.club/v1"
 RADARR_META_APIKEY = os.getenv("RADARR_META_API_KEY")
 READARR_META_APIKEY = os.getenv("READARR_META_API_KEY")
 WHISPARR_META_APIKEY = os.getenv("WHISPARR_META_API_KEY")
+REFRESH_ALLOW_ROLES = os.getenv("REFRESH_ALLOW_ROLES", "").split(",") or [
+    "Admin",
+    "Servarr Team",
+    "Moderatarr",
+    "Bot Whisperer",
+    "VIP",
+    "Support Slayarr",
+    "Donatarr",
+]
+
 
 class InvalidURL(Exception):
     pass
@@ -144,7 +154,6 @@ class RadarrMeta(commands.Cog):
         self._headers = {'User-Agent': 'Python/3.8'}
 
     @commands.group(invoke_without_command=True)
-    @commands.mod_or_permissions(administrator=True)
     async def refresh(self, ctx, *, resources: str):
         """
         Refreshes cached items
@@ -152,9 +161,15 @@ class RadarrMeta(commands.Cog):
         **Arguments:**
         - `<resources>` Resource ids as album/mbid, artist/mbid, or movie/id
         """
+        allowed = any(
+            ctx.permissions.administrator,
+            any(role.name in REFRESH_ALLOW_ROLES for role in ctx.author.roles)
+        )
+
+        if not allowed:
+            return
         async with ctx.typing():
             try:
-                log.info(f"Refresh called by {ctx.author} with roles {ctx.author.roles}")
                 statuses = await process_refresh_resources(resources)
                 await ctx.send(f"Refresh statuses: {statuses}")
             except asyncio.TimeoutError:
