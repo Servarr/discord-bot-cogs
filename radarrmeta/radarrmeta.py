@@ -161,9 +161,9 @@ class RadarrMeta(commands.Cog):
         **Arguments:**
         - `<resources>` Resource ids as album/mbid, artist/mbid, or movie/id
         """
-        allowed = any(
-            ctx.permissions.administrator,
-            any(role.name in REFRESH_ALLOW_ROLES for role in ctx.author.roles)
+        allowed = (
+            ctx.permissions.administrator
+            or any(role.name in REFRESH_ALLOW_ROLES for role in ctx.author.roles),
         )
 
         if not allowed:
