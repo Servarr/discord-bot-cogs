@@ -154,6 +154,7 @@ class RadarrMeta(commands.Cog):
         """
         async with ctx.typing():
             try:
+                log.info(f"Refresh called by {ctx.author} with roles {ctx.author.roles}")
                 statuses = await process_refresh_resources(resources)
                 await ctx.send(f"Refresh statuses: {statuses}")
             except asyncio.TimeoutError:
