@@ -162,9 +162,8 @@ class RadarrMeta(commands.Cog):
         - `<resources>` Resource ids as album/mbid, artist/mbid, or movie/id
         """
         log.info(f"Refresh requested by {ctx.author} with roles: {ctx.author.roles}")
-        allowed = (
-            ctx.permissions.administrator
-            or any(role.name in REFRESH_ALLOW_ROLES for role in ctx.author.roles),
+        allowed = ctx.permissions.administrator or any(
+            role.name in REFRESH_ALLOW_ROLES for role in ctx.author.roles
         )
         log.info(f"Allowed: {allowed}")
 
