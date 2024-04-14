@@ -32,6 +32,8 @@ REFRESH_ALLOW_ROLES = os.getenv("REFRESH_ALLOW_ROLES", "").split(",") or [
     "Donatarr",
 ]
 
+log.info(f"REFRESH_ALLOW_ROLES: {REFRESH_ALLOW_ROLES}")
+
 
 class InvalidURL(Exception):
     pass
@@ -162,8 +164,9 @@ class RadarrMeta(commands.Cog):
         - `<resources>` Resource ids as album/mbid, artist/mbid, or movie/id
         """
         log.info(f"Refresh requested by {ctx.author} with roles: {ctx.author.roles}")
-        allowed = ctx.permissions.administrator or any(
-            role.name in REFRESH_ALLOW_ROLES for role in ctx.author.roles
+        allowed = (
+            ctx.permissions.administrator
+            or any(role.name in REFRESH_ALLOW_ROLES for role in ctx.author.roles),
         )
         log.info(f"Allowed: {allowed}")
 
