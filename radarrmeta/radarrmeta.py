@@ -12,7 +12,7 @@ from redbot.core import app_commands, commands
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.3.2"
+__version__ = "1.3.3"
 
 HEADERS = {"User-Agent": f"radarrmeta-cog/{__version__}"}
 RADARR_META_BASE = "https://api.radarr.video/v1"
@@ -166,7 +166,7 @@ class RadarrMeta(commands.Cog):
         log.info(f"Refresh requested by {ctx.author} with roles: {ctx.author.roles}")
         roles = [discord.utils.get(ctx.guild.roles, name=x) for x in REFRESH_ALLOW_ROLES]
         allowed = (
-            ctx.permissions.administrator
+            ctx.message.author.guild_permissions.administrator
             or any(i in ctx.author.roles for i in roles),
         )
         log.info(f"Allowed: {allowed}")
