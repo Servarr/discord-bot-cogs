@@ -59,7 +59,7 @@ class Parserr(commands.Cog):
 
         - `<release>` The release title to parse.
         """
-        await self._response_builder(interaction=interaction, release=release, app="sonarr", branch="v4", api=3)
+        await self._response_builder(interaction=interaction, release=release, app="sonarr", branch="nightly", api=3)
 
     @parse.command()
     @app_commands.describe(release="Release name to parse.")
