@@ -22,7 +22,7 @@ READARR_META_BASE = "https://api.bookinfo.club/v1"
 RADARR_META_APIKEY = os.getenv("RADARR_META_API_KEY")
 READARR_META_APIKEY = os.getenv("READARR_META_API_KEY")
 WHISPARR_META_APIKEY = os.getenv("WHISPARR_META_API_KEY")
-REFRESH_ALLOW_ROLES = os.getenv("REFRESH_ALLOW_ROLES", "").split(",") or [
+REFRESH_ALLOW_ROLES = os.getenv("REFRESH_ALLOW_ROLES") or [
     "Admin",
     "Servarr Team",
     "Moderatarr",
@@ -31,6 +31,8 @@ REFRESH_ALLOW_ROLES = os.getenv("REFRESH_ALLOW_ROLES", "").split(",") or [
     "Support Slayarr",
     "Donatarr",
 ]
+if isinstance(REFRESH_ALLOW_ROLES, str):
+    REFRESH_ALLOW_ROLES = REFRESH_ALLOW_ROLES.split(",")
 
 log.info(f"REFRESH_ALLOW_ROLES: {REFRESH_ALLOW_ROLES}")
 
@@ -164,10 +166,9 @@ class RadarrMeta(commands.Cog):
         - `<resources>` Resource ids as album/mbid, artist/mbid, or movie/id
         """
         log.info(f"Refresh requested by {ctx.author} with roles: {ctx.author.roles}")
-        roles = [discord.utils.get(ctx.guild.roles, name=x) for x in REFRESH_ALLOW_ROLES]
         allowed = (
             ctx.message.author.guild_permissions.administrator
-            or any(i in ctx.author.roles for i in roles),
+            or any(i in ctx.author.roles for i in REFRESH_ALLOW_ROLES),
         )
         log.info(f"Allowed: {allowed}")
 
