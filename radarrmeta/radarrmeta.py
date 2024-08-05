@@ -170,7 +170,10 @@ class RadarrMeta(commands.Cog):
         log.info(f"Allowed: {allowed}")
 
         if not allowed:
-            return
+            embed = discord.Embed(title="Restricted command", colour=0xe06666)
+            embed.description = "Due to the amount of api-calls needed on the backend to perform a refresh, this command is restricted to \
+                donators and moderators. This is to avoid rate-limits from the respective metadata providers."
+            await ctx.reply(embed=embed)
         async with ctx.typing():
             try:
                 statuses = await process_refresh_resources(resources)
