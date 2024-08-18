@@ -174,6 +174,7 @@ class RadarrMeta(commands.Cog):
             embed.description = "Due to the amount of api-calls needed on the backend to perform a refresh, this command is restricted to \
                 donators and moderators. This is to avoid rate-limits from the respective metadata providers."
             await ctx.reply(embed=embed)
+            return
         async with ctx.typing():
             try:
                 statuses = await process_refresh_resources(resources)
