@@ -30,6 +30,7 @@ REFRESH_ALLOW_ROLES = os.getenv("REFRESH_ALLOW_ROLES") or [
     "VIP",
     "Support Slayarr",
     "Donatarr",
+    "Indexer Request Management"
 ]
 if isinstance(REFRESH_ALLOW_ROLES, str):
     REFRESH_ALLOW_ROLES = REFRESH_ALLOW_ROLES.split(",")
