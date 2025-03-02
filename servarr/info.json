@@ -1,0 +1,9 @@
+{
+    "author" : [ "TeamServarr" ],
+    "bot_version": [ 1, 2, 2 ],
+    "install_msg" : "Installed Servarr cog",
+    "short" : "Various commands used on the Servarr server",
+    "description" : "Various commands used on the Servarr server",
+    "min_bot_version": "3.5.0",
+    "tags" : [ "servarr" ]
+}
