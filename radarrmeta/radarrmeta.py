@@ -18,10 +18,12 @@ HEADERS = {"User-Agent": f"radarrmeta-cog/{__version__}"}
 RADARR_META_BASE = "https://api.radarr.video/v1"
 LIDARR_META_BASE = "https://api.lidarr.audio/api/v0.4"
 WHISPARR_META_BASE = "https://api.whisparr.com/v3"
+WHISPARRV3_META_BASE = "https://api.whisparr.com/v4"
 READARR_META_BASE = "https://api.bookinfo.club/v1"
 RADARR_META_APIKEY = os.getenv("RADARR_META_API_KEY")
 READARR_META_APIKEY = os.getenv("READARR_META_API_KEY")
 WHISPARR_META_APIKEY = os.getenv("WHISPARR_META_API_KEY")
+WHISPARRV3_META_APIKEY = os.getenv("WHISPARRV3_META_API_KEY")
 REFRESH_ALLOW_ROLES = os.getenv("REFRESH_ALLOW_ROLES") or [
     "Admin",
     "Servarr Team",
@@ -94,7 +96,7 @@ async def refresh_xxx_sites(ids: List[int]):
                 headers={"apikey": WHISPARR_META_APIKEY, **HEADERS}
         ) as resp:
             return resp.status
-        
+
 async def refresh_xxx_scenes(ids: List[int]):
     timeout = aiohttp.ClientTimeout(total=20)
     async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
@@ -115,9 +117,39 @@ async def refresh_xxx_movies(ids: List[int]):
         ) as resp:
             return resp.status
 
+async def refresh_xxx_sites_v3(ids: List[int]):
+    timeout = aiohttp.ClientTimeout(total=20)
+    async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
+        async with session.post(
+                f"{WHISPARRV3_META_BASE}/site/bulk/refresh",
+                json=ids,
+                headers={"apikey": WHISPARRV3_META_APIKEY, **HEADERS}
+        ) as resp:
+            return resp.status
+
+async def refresh_xxx_scenes_v3(ids: List[int]):
+    timeout = aiohttp.ClientTimeout(total=20)
+    async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
+        async with session.post(
+                f"{WHISPARRV3_META_BASE}/scene/bulk/refresh",
+                json=ids,
+                headers={"apikey": WHISPARRV3_META_APIKEY, **HEADERS}
+        ) as resp:
+            return resp.status
+        
+async def refresh_xxx_movies_v3(ids: List[int]):
+    timeout = aiohttp.ClientTimeout(total=20)
+    async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
+        async with session.post(
+                f"{WHISPARRV3_META_BASE}/movie/bulk/refresh",
+                json=ids,
+                headers={"apikey": WHISPARRV3_META_APIKEY, **HEADERS}
+        ) as resp:
+            return resp.status
+
 
 def collect_resources(indvidual_resources: List[str]) -> Dict[str, str]:
-    output = {"album": [], "artist": [], "author": [], "movie": [], "collection": [], "xxx_site": [], "xxx_scene": [], "xxx_movie": []}
+    output = {"album": [], "artist": [], "author": [], "movie": [], "collection": [], "xxx_site": [], "xxx_scene": [], "xxx_movie": [], "xxx_site_v3": [], "xxx_scene_v3": [], "xxx_movie_v3": []}
     for resource in indvidual_resources:
         key, value = resource.split("/")
         output[key].append(value)
@@ -143,6 +175,12 @@ async def process_refresh_resources(resources: str):
         futures.append(refresh_xxx_scenes(per_resource_type["xxx_scene"]))
     if per_resource_type["xxx_movie"]:
         futures.append(refresh_xxx_movies(per_resource_type["xxx_movie"]))
+    if per_resource_type["xxx_site_v3"]:
+        futures.append(refresh_xxx_sites_v3(per_resource_type["xxx_site_v3"]))
+    if per_resource_type["xxx_scene_v3"]:
+        futures.append(refresh_xxx_scenes_v3(per_resource_type["xxx_scene_v3"]))
+    if per_resource_type["xxx_movie_v3"]:
+        futures.append(refresh_xxx_movies_v3(per_resource_type["xxx_movie_v3"]))
     if ids := per_resource_type["collection"]:
         futures.append(refresh_collections(ids))
     responses = await asyncio.gather(*futures)
@@ -164,7 +202,8 @@ class RadarrMeta(commands.Cog):
         Refreshes cached items
 
         **Arguments:**
-        - `<resources>` Resource ids as album/mbid, artist/mbid, or movie/id
+        - `<resources>` Resource ids as album/mbid, artist/mbid, movie/id, xxx_site/id, xxx_scene/id, xxx_movie/id
+        - For V3 Whisparr (V4 API) use: xxx_site_v3/id, xxx_scene_v3/id, xxx_movie_v3/id
         """
         log.info(f"Refresh requested by {ctx.author} with roles: {ctx.author.roles}")
         allowed = ctx.message.author.guild_permissions.administrator or any([i.name in REFRESH_ALLOW_ROLES for i in ctx.author.roles ])
