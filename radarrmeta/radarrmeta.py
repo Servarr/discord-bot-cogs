@@ -12,7 +12,7 @@ from redbot.core import app_commands, commands
 log = logging.getLogger("red.servarr.radarrmeta")
 
 
-__version__ = "1.3.3"
+__version__ = "1.3.4"
 
 HEADERS = {"User-Agent": f"radarrmeta-cog/{__version__}"}
 RADARR_META_BASE = "https://api.radarr.video/v1"
@@ -117,7 +117,7 @@ async def refresh_xxx_movies(ids: List[int]):
         ) as resp:
             return resp.status
 
-async def refresh_xxx_sites_v3(ids: List[int]):
+async def refresh_xxx_sites_v3(ids: List[str]):
     timeout = aiohttp.ClientTimeout(total=20)
     async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
         async with session.post(
@@ -127,7 +127,7 @@ async def refresh_xxx_sites_v3(ids: List[int]):
         ) as resp:
             return resp.status
 
-async def refresh_xxx_scenes_v3(ids: List[int]):
+async def refresh_xxx_scenes_v3(ids: List[str]):
     timeout = aiohttp.ClientTimeout(total=20)
     async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
         async with session.post(
@@ -137,7 +137,7 @@ async def refresh_xxx_scenes_v3(ids: List[int]):
         ) as resp:
             return resp.status
         
-async def refresh_xxx_movies_v3(ids: List[int]):
+async def refresh_xxx_movies_v3(ids: List[str]):
     timeout = aiohttp.ClientTimeout(total=20)
     async with aiohttp.ClientSession(headers=HEADERS, timeout=timeout) as session:
         async with session.post(
