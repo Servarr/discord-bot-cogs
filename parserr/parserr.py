@@ -74,19 +74,6 @@ class Parserr(commands.Cog):
         """
         await self._response_builder(interaction=interaction, release=release, app="lidarr", branch="nightly", api=1)
 
-    @parse.command()
-    @app_commands.describe(release="Release name to parse.")
-    async def readarr(self, interaction: discord.Interaction, release: str):
-        """Make a Readarr parse call
-
-        If a branch is not specified, the nightly branch will be used.
-
-        **Arguments:**
-
-        - `<release>` The release title to parse.
-        """
-        await self._response_builder(interaction=interaction, release=release, app="readarr", branch="nightly", api=1)
-
     async def _response_builder(self, interaction: discord.Interaction, release: str, app: str, branch: str = "nightly", api: int = 3):
         branch = branch.value if isinstance(branch, app_commands.Choice) else branch
         api_branch = branch
@@ -110,8 +97,6 @@ class Parserr(commands.Cog):
                 embed = self._get_sonarr_embed(parse_dict)
             elif app == "lidarr":
                 embed = self._get_lidarr_embed(parse_dict)
-            elif app == "readarr":
-                embed = self._get_readarr_embed(parse_dict)
 
             embed.set_footer(text=f"{app.title()} Version {version} | Branch {branch.title()}")
 
@@ -217,30 +202,6 @@ class Parserr(commands.Cog):
         return embed
 
     @staticmethod
-    def _get_readarr_embed(response):
-        embed = discord.Embed(title=f"Readarr Parse Result", description="", colour=0xff0000)
-        embed.add_field(name="Attempted Release Title", value=f"```{response['title']  or '-'}```", inline=False)
-        parsed_obj = response.get("parsedBookInfo")
-        if not parsed_obj:
-            embed.description = f"Failed to parse `{response['title']}`"
-            embed.colour = 0xff0000
-            return embed
-        quality = parsed_obj["quality"]["quality"]["name"] or "-"
-        quality_real = "True" if parsed_obj["quality"]["revision"]["real"] > 0 else "-" or "-"
-        quality_proper = "True" if parsed_obj["quality"]["revision"]["version"] > 1 else "-" or "-"
-        quality_repack = "True" if parsed_obj["quality"]["revision"]["isRepack"] is True else "-" or "-"
-
-        embed.add_field(name="Author Name", value=parsed_obj.get("authorName", "-"), inline=True)
-        embed.add_field(name="Book Title", value=parsed_obj.get("bookTitle", "-"), inline=True)
-        embed.add_field(name="Release Date", value=parsed_obj["releaseDate"] or "-", inline=True)
-        embed.add_field(name="Quality", value=quality, inline=False)
-        embed.add_field(name="Proper", value=quality_proper, inline=True)
-        embed.add_field(name="Real", value=quality_real, inline=True)
-        embed.add_field(name="Repack", value=quality_repack, inline=True)
-        embed.add_field(name="Release Group", value=parsed_obj.get("releaseGroup", "-"), inline=False)
-        return embed
-
-    @staticmethod
     def _get_lidarr_embed(response):
         embed = discord.Embed(title=f"Lidarr Parse Result", description="", colour=0x40a333)
         embed.add_field(name="Attempted Release Title", value=f"```{response['title']  or '-'}```", inline=False)
@@ -267,7 +228,7 @@ class Parserr(commands.Cog):
 
     @staticmethod
     def _valid_server(server: str):
-        servers = ["radarr", "lidarr", "sonarr", "readarr"]
+        servers = ["radarr", "lidarr", "sonarr"]
         if not server:
             return "Radarr"
 
