@@ -16,10 +16,10 @@ __version__ = "1.3.4"
 
 HEADERS = {"User-Agent": f"radarrmeta-cog/{__version__}"}
 RADARR_META_APIKEY = os.getenv("RADARR_META_API_KEY")
-RADARR_META_BASE = "https://api.radarr.video/v1"
-LIDARR_META_BASE = "https://api.lidarr.audio/api/v0.4"
-WHISPARR_META_BASE = "https://api.whisparr.com/v3"
-WHISPARRV3_META_BASE = "https://api.whisparr.com/v4"
+RADARR_META_BASE = os.getenv("RADARR_META_BASE") or "https://api.radarr.video/v1"
+LIDARR_META_BASE = os.getenv("LIDARR_META_BASE") or "https://api.lidarr.audio/api/v0.4"
+WHISPARR_META_BASE = os.getenv("WHISPARR_META_BASE") or "https://api.whisparr.com/v3"
+WHISPARRV3_META_BASE = os.getenv("WHISPARRV3_META_BASE") or "https://api.whisparr.com/v4"
 WHISPARR_META_APIKEY = os.getenv("WHISPARR_META_API_KEY")
 WHISPARRV3_META_APIKEY = os.getenv("WHISPARR_META_API_KEY")
 REFRESH_ALLOW_ROLES = os.getenv("REFRESH_ALLOW_ROLES") or [
